@@ -17,7 +17,7 @@ function identifyInn(){
 }
 function restInn(){
   if(MAP!=='inn')return false;
-  if(P.hp>=P.maxHp&&P.mp>=P.maxMp){$('dlgLine').textContent='토비가 루크레아를 위아래로 훑어봤다. “멀쩡한데요? 침대가 그립다는 이유면 말리진 않겠지만.”';return false;}
+  if(P.hp>=P.maxHp&&P.mp>=P.maxMp){$('dlgLine').textContent='토비가 루시에라를 위아래로 훑어봤다. “멀쩡한데요? 침대가 그립다는 이유면 말리진 않겠지만.”';return false;}
   const cost=innCost();
   if(P.gold<cost){$('dlgLine').textContent='토비가 금액을 다시 세어보다가 슬쩍 장부를 덮었다. “오늘은 그냥 앉았다 가요. 방값 얘긴… 다음에 합시다.”';return false;}
   setGold(P.gold-cost);

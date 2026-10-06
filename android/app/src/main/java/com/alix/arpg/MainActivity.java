@@ -46,7 +46,7 @@ import org.json.JSONObject;
 // 켤 때마다 깃허브 페이지의 최신 게임을 불러오고, 인터넷이 안 되면 앱 안에 든 예비 판으로 실행한다.
 // 저장은 게임 쪽(localStorage)과 앱 쪽(SharedPreferences "store")에 같이 적어, 두 판이 같은 저장을 쓴다.
 public final class MainActivity extends Activity {
-    private static final String REMOTE = "https://alix1211.github.io/ARPG/game/town.html";
+    private static final String REMOTE = "https://alix1211.github.io/sandrock/game/town.html";
     private static final String LOCAL = "https://appassets.androidplatform.net/assets/game/town.html";
     private WebView game;
     private SharedPreferences store;
@@ -73,8 +73,8 @@ public final class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle b) {
         super.onCreate(b);
-        store = getSharedPreferences("store", MODE_PRIVATE);
-        backupPrefs = getSharedPreferences("backup", MODE_PRIVATE);
+        store = getSharedPreferences("sandrock_store", MODE_PRIVATE);
+        backupPrefs = getSharedPreferences("sandrock_backup", MODE_PRIVATE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideBars();
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(v -> ui.postDelayed(this::hideBars, 1500));
@@ -137,12 +137,12 @@ public final class MainActivity extends Activity {
             catch (Exception e) { return "{}"; }
         }
         @JavascriptInterface public void put(String k, String v) {
-            if (k == null || !k.startsWith("arpg_") || v == null) return;
+            if (k == null || !k.startsWith("sandrock_") || v == null) return;
             synchronized (backupLock) { if (restoringBackup) return; store.edit().putString(k, v).apply(); }
             queueBackup(false);
         }
         @JavascriptInterface public void del(String k) {
-            if (k == null || !k.startsWith("arpg_")) return;
+            if (k == null || !k.startsWith("sandrock_")) return;
             synchronized (backupLock) { if (restoringBackup) return; store.edit().remove(k).apply(); }
             queueBackup(false);
         }
@@ -203,7 +203,7 @@ public final class MainActivity extends Activity {
     }
     private void replaceStore(JSONObject all) throws Exception {
         SharedPreferences.Editor edit = store.edit();
-        for (String k : store.getAll().keySet()) if (k.startsWith("arpg_")) edit.remove(k);
+        for (String k : store.getAll().keySet()) if (k.startsWith("sandrock_")) edit.remove(k);
         for (Iterator<String> it = all.keys(); it.hasNext();) { String k = it.next(); edit.putString(k, all.getString(k)); }
         if (!edit.commit()) throw new IllegalStateException();
     }
@@ -214,7 +214,7 @@ public final class MainActivity extends Activity {
         Intent i = new Intent(create ? Intent.ACTION_CREATE_DOCUMENT : Intent.ACTION_OPEN_DOCUMENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
         i.setType(create ? "application/json" : "*/*");
-        if (create) i.putExtra(Intent.EXTRA_TITLE, "arpg_save.json");
+        if (create) i.putExtra(Intent.EXTRA_TITLE, "sandrock_save.json");
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         try { startActivityForResult(i, create ? REQ_BACKUP : REQ_LINK); }
         catch (ActivityNotFoundException e) { pickingBackup = false; backupNotice("파일 선택 화면을 열지 못했습니다."); }
@@ -255,19 +255,19 @@ public final class MainActivity extends Activity {
     private JSONObject snapshot() throws Exception {
         JSONObject o = new JSONObject();
         for (Map.Entry<String, ?> e : store.getAll().entrySet())
-            if (e.getKey().startsWith("arpg_") && e.getValue() instanceof String) o.put(e.getKey(), e.getValue());
+            if (e.getKey().startsWith("sandrock_") && e.getValue() instanceof String) o.put(e.getKey(), e.getValue());
         return o;
     }
 
-    // 백업 형식은 기존 arpg_* 값의 묶음. v3 내부 필드/시각을 다시 만들거나 변환하지 않는다.
+    // 백업 형식은 기존 sandrock_* 값의 묶음. v3 내부 필드/시각을 다시 만들거나 변환하지 않는다.
     static JSONObject validBackup(String text) throws Exception {
         if (text == null || text.getBytes(StandardCharsets.UTF_8).length > MAX_BACKUP_BYTES) throw new IllegalArgumentException();
         JSONObject all = new JSONObject(text);
         for (Iterator<String> it = all.keys(); it.hasNext();) {
             String k = it.next();
-            if (!k.startsWith("arpg_") || !(all.get(k) instanceof String)) throw new IllegalArgumentException();
+            if (!k.startsWith("sandrock_") || !(all.get(k) instanceof String)) throw new IllegalArgumentException();
         }
-        JSONObject s = new JSONObject(all.getString("arpg_save_v3"));
+        JSONObject s = new JSONObject(all.getString("sandrock_save_v3"));
         for (String k : new String[]{"gold", "hp", "mp"})
             if (!(s.get(k) instanceof Number) || !Double.isFinite(s.getDouble(k))) throw new IllegalArgumentException();
         if (s.has("t") && (!(s.get("t") instanceof Number) || !Double.isFinite(s.getDouble("t"))
@@ -286,7 +286,7 @@ public final class MainActivity extends Activity {
     }
     static long saveTime(JSONObject all) {
         try { JSONObject checked = validBackup(all.toString());
-            JSONObject s = new JSONObject(checked.getString("arpg_save_v3"));
+            JSONObject s = new JSONObject(checked.getString("sandrock_save_v3"));
             if (!s.has("t")) return 0;
             if (!(s.get("t") instanceof Number) || !Double.isFinite(s.getDouble("t"))
                 || s.getDouble("t") < 0 || s.getDouble("t") != s.getLong("t")) return -1;
@@ -380,7 +380,7 @@ public final class MainActivity extends Activity {
                 js("window.onArpgRestore&&window.onArpgRestore(" + JSONObject.quote(pendingRestore) + ")");
             } catch (Exception e) {
                 restoringBackup = false;
-                js("window.onArpgBackupFail&&window.onArpgBackupFail('불러올 수 없는 파일입니다. ARPG 백업 파일과 연결 상태를 확인해 주세요. 기존 저장은 유지됩니다.')");
+                js("window.onArpgBackupFail&&window.onArpgBackupFail('불러올 수 없는 파일입니다. 이 게임 백업 파일과 연결 상태를 확인해 주세요. 기존 저장은 유지됩니다.')");
             }
         });
     }

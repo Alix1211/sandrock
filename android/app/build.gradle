@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.alix.arpg'
+        applicationId 'com.alix.sandrock'
         minSdk 26
         targetSdk 35
         versionCode ((int) (System.currentTimeMillis() / 60000L - 29000000L))   // 만든 시각 기준: 새로 만든 것이 항상 더 큼
@@ -45,11 +45,11 @@ tasks.configureEach {
     if (name.startsWith('merge') && name.endsWith('Assets')) dependsOn(syncWebAssets)
 }
 
-// 만들어진 앱 파일 이름을 arpg.apk 로도 복사
+// 만들어진 앱 파일 이름을 sandrock.apk 로도 복사
 tasks.configureEach { t ->
     if (t.name == 'assembleDebug') t.doLast {
         def d = layout.buildDirectory.dir('outputs/apk/debug').get().asFile
         def a = new File(d, 'app-debug.apk')
-        if (a.exists()) java.nio.file.Files.copy(a.toPath(), new File(d, 'arpg.apk').toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        if (a.exists()) java.nio.file.Files.copy(a.toPath(), new File(d, 'sandrock.apk').toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
     }
 }

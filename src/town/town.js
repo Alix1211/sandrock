@@ -106,7 +106,7 @@ buildWorld('town');
 // ======================= 플레이어 =======================
 // 수치 규모: 체력·마나·공격·방어·경험치 같은 정수 수치는 '기준 단위 × NUM'으로 다룬다(세분화된 수치 변화용). 스킬표(SK)·몬스터 기준값 등은 기준 단위로 적고 쓰는 곳에서 곱한다.
 const NUM = 100;
-const P = { name:'루크레아', x:23*TS, y:22.2*TS, r:11, dir:'back', flip:false, moving:false, t:0, gold:300,
+const P = { name:'루시에라', x:23*TS, y:22.2*TS, r:11, dir:'back', flip:false, moving:false, t:0, gold:300,
   hp:40*NUM, mp:28*NUM, maxHp:40*NUM, maxMp:28*NUM, lv:1, exp:0, statPts:0, skillPts:0, lifePts:0,
   stats:{str:5,vit:5,int:5,mag:6,dex:8,luck:3},
   mastery:{sword:{lv:0,xp:0},spear:{lv:0,xp:0},gauntlet:{lv:0,xp:0},bow:{lv:0,xp:0},staff:{lv:0,xp:0}},
@@ -556,7 +556,7 @@ const SHOP_BUY_RATE = {
   general: { weapon:0.60, armor:0.60, accessory:0.60, material:0.90, potion:1.00, junk:0.90 },
 };
 // 작은 마을이 붙으면 CUR.market 또는 NPC.market에 아래 키만 넣으면 같은 판매식이 바로 적용된다.
-// 일부 품목은 ±20~35% 차이. 먼 마을까지 오가며 시세차익을 노리는 루크레아의 생활 동기.
+// 일부 품목은 ±20~35% 차이. 먼 마을까지 오가며 시세차익을 노리는 루시에라의 생활 동기.
 const REGION_MARKET = {
   town:    { weapon:1.00, armor:1.00, accessory:1.00, material:1.00, potion:1.00, junk:1.00 },
   spring:  { weapon:0.90, armor:0.95, accessory:1.20, material:1.10, potion:0.90, junk:1.05 },

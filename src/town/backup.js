@@ -1,4 +1,4 @@
-// 문플로의 문서 선택/연결 방식. 백업은 기존 arpg_* 문자열 값의 묶음이며 저장 스키마는 유지한다.
+// 문플로의 문서 선택/연결 방식. 백업은 sandrock_* 문자열 값의 묶음이며 저장 스키마는 유지한다.
 (() => {
   const bridge=window.ArpgBridge, el=id=>document.getElementById(id);
   if(!bridge||typeof bridge.pickBackup!=='function'||typeof bridge.backupStatus!=='function'||typeof bridge.restoreBackup!=='function')return;
@@ -28,8 +28,8 @@
   function valid(text){
     if(window.ARPG_SAVE_SYNC)return ARPG_SAVE_SYNC.valid(text);
     const all=JSON.parse(text);
-    if(!all||Array.isArray(all)||typeof all!=='object'||Object.keys(all).some(k=>!k.startsWith('arpg_')||typeof all[k]!=='string'))throw Error();
-    const s=JSON.parse(all.arpg_save_v3),obj=v=>v&&typeof v==='object'&&!Array.isArray(v);
+    if(!all||Array.isArray(all)||typeof all!=='object'||Object.keys(all).some(k=>!k.startsWith('sandrock_')||typeof all[k]!=='string'))throw Error();
+    const s=JSON.parse(all.sandrock_save_v3),obj=v=>v&&typeof v==='object'&&!Array.isArray(v);
     if(s.v!==3||!Number.isInteger(s.lv)||s.lv<1||s.lv>70||!['gold','hp','mp'].every(k=>Number.isFinite(s[k]))||!obj(s.stats)||!Array.isArray(s.bag)||!obj(s.eq))throw Error();
     return all;
   }
@@ -43,7 +43,7 @@
     window.ARPG_BACKUP_RESTORING=true;
     try{
       if(window.ARPG_SAVE_SYNC)ARPG_SAVE_SYNC.apply(all);
-      else for(const k of Object.keys(localStorage))if(k.startsWith('arpg_'))localStorage.removeItem(k);
+      else for(const k of Object.keys(localStorage))if(k.startsWith('sandrock_'))localStorage.removeItem(k);
       for(const [k,v] of Object.entries(all)){
         if(!window.ARPG_SAVE_SYNC)localStorage.setItem(k,v);
         // 앱 브리지 쪽 저장도 즉시 같은 값으로 맞춘다. 브라우저 저장만 바뀐 뒤 reload 되며

@@ -3,14 +3,14 @@
 // 짧은 잔향을 섞는다. 나중에 진짜 효과음 파일이 오면 SFX.files[이름] 에 넣으면 그 파일이 대신 재생된다.
 const AUDIO_SETTINGS = (() => {
   let saved={};
-  try { saved=JSON.parse(localStorage.getItem('arpg_audio_settings')||'null')||{}; } catch(e){}
-  let legacyOff=false;try{legacyOff=localStorage.getItem('arpg_sound')==='off';}catch(e){}
+  try { saved=JSON.parse(localStorage.getItem('sandrock_audio_settings')||'null')||{}; } catch(e){}
+  let legacyOff=false;try{legacyOff=localStorage.getItem('sandrock_sound')==='off';}catch(e){}
   const clamp=(v,f)=>Number.isFinite(v)?Math.max(0,Math.min(1,v)):f;
   const values={sfx:clamp(saved.sfx,legacyOff?0:1),bgm:clamp(saved.bgm,legacyOff?0:1),vibration:saved.vibration!==false};
   return {get:()=>({...values}),set(key,value){
     if(key==='vibration')values[key]=!!value;
     else if(key==='sfx'||key==='bgm')values[key]=clamp(Number(value),values[key]);else return;
-    try{localStorage.setItem('arpg_audio_settings',JSON.stringify(values));}catch(e){}
+    try{localStorage.setItem('sandrock_audio_settings',JSON.stringify(values));}catch(e){}
     if(typeof SFX!=='undefined')SFX.syncVolume();
     if(typeof BGM!=='undefined')BGM.sync();
     if(key==='vibration'&&!values.vibration)try{navigator.vibrate&&navigator.vibrate(0);}catch(e){}

@@ -436,7 +436,7 @@ function render(){
     const expMax=Pp.lv>=70?1:G.expNeed(Pp.lv),bars=[[Pp.hp,d.maxHp,106],[Pp.mp,d.maxMp,141],[Pp.lv>=70?1:Pp.exp,expMax,176]];
     bars.forEach(([v,m,y],i)=>{const t=el('div','sbar');t.style.top=(y-1)+'px';const f=el('i','b'+i);f.style.width=Math.max(0,Math.min(100,v/m*100))+'%';t.append(f);t.append(el('span','',i===2?(Pp.lv>=70?'MAX LEVEL':`경험치 ${v} / ${m}`):`${v} / ${m}`));L.append(t);});
     d.rows.forEach(([key,n,v,sub],i)=>{const r=el('div','srow');r.style.top=(232+i*47.7)+'px';r.append(el('b','',n),el('em','',v),el('small','',sub));if(key){const plus=el('button','statplus','+');plus.type='button';plus.disabled=(Pp.statPts||0)<1;plus.onclick=()=>G.investStat(key);r.append(plus);}L.append(r);});
-    const lv=el('div','slv');lv.append(document.createTextNode(`${Pp.name||'루크레아'} · Lv${Pp.lv} · T${G.levelTier(Pp.lv)} · `));
+    const lv=el('div','slv');lv.append(document.createTextNode(`${Pp.name||'루시에라'} · Lv${Pp.lv} · T${G.levelTier(Pp.lv)} · `));
     lv.append(el('span',(Pp.statPts||0)>0?'pointpulse':'',`능력 ${Pp.statPts||0}P`),document.createTextNode(' · '),el('span',(Pp.skillPts||0)>0?'pointpulse':'',`스킬 ${Pp.skillPts||0}P`),document.createTextNode(` · 생활 ${Pp.lifePts||0}P`));L.append(lv);
   }
   $('tabSt').classList.toggle('pointpulse',(Pp.statPts||0)>0);
@@ -682,8 +682,8 @@ window.UI = {
   isOpen: () => $('char').classList.contains('on'), close: closeChar,
 };
 // ---- 저장 (이 기기의 브라우저에 자동 저장: 금화·체력·레벨·가방·장비·물약·퀵슬롯) ----
-const SKEY='arpg_save_v3';
-try{localStorage.removeItem('arpg_save_v1');localStorage.removeItem('arpg_save_v2');}catch(e){}
+const SKEY='sandrock_save_v3';
+try{localStorage.removeItem('sandrock_save_v1');localStorage.removeItem('sandrock_save_v2');}catch(e){}
 let RESETTING=false;
 function saveGame(){
   if(RESETTING||window.ARPG_BACKUP_RESTORING||window.ARPG_SYNC_CHECKING)return;
@@ -709,7 +709,7 @@ function loadGame(){
   if(d.qs)for(let i=0;i<5;i++)QS[i]=d.qs[i]&&(d.qs[i]==='townPortal'||A.skicon[d.qs[i]])?d.qs[i]:null;
   // unid 필드가 없는 이전 저장 장비는 falsy이므로 모두 감정 완료로 취급한다.
   let mx=0;for(const it of [...bag,...stash,...Object.values(eq)])if(it&&it.id>mx)mx=it.id;seq=mx+1;
-  const P=G.P;P.name=d.name||P.name||'루크레아';P.lv=d.lv||1;P.exp=d.exp||0;P.statPts=d.statPts|0;P.skillPts=d.skillPts|0;P.lifePts=d.lifePts|0;
+  const P=G.P;P.name=d.name||P.name||'루시에라';P.lv=d.lv||1;P.exp=d.exp||0;P.statPts=d.statPts|0;P.skillPts=d.skillPts|0;P.lifePts=d.lifePts|0;
   P.stats=Object.assign({},P.stats,d.stats||{});P.mastery=Object.assign({},P.mastery,d.mastery||{});P.skillLv=Object.assign({},P.skillLv,d.skillLv||{});
   P.lifeSkills=Object.assign({},P.lifeSkills||{},d.lifeSkills||{});P.passives=Object.assign({},P.passives||{},d.passives||{});P.portalReadyAt=+d.portalReadyAt||0;P.reviveReadyAt=+d.reviveReadyAt||0;P.reviveArmed=!!d.reviveArmed;P.reviveRank=Math.max(1,Math.min(5,+d.reviveRank||1));
   if(G.syncLifeUnlocks)G.syncLifeUnlocks(true);G.setGold(d.gold|0);if(window.COMPANION)COMPANION.loadData(d.companion);if(window.TRADE)TRADE.loadData(d.trade);if(window.GUILD)GUILD.loadData(d.guild);if(window.QUEST)QUEST.loadData(d.quests);return d;

@@ -1,5 +1,5 @@
 'use strict';
-// 루크레아 혼잣말 + 마을 사람 잡담. 대사는 아래 CHAT에 모아 두었다(고치기 쉽게). {이름}은 주인공 이름으로 바뀐다.
+// 루시에라 혼잣말 + 마을 사람 잡담. 대사는 아래 CHAT에 모아 두었다(고치기 쉽게). {이름}은 주인공 이름으로 바뀐다.
 // 혼잣말 말투: 계산적이고 짧은 공손체. NPC 말투는 각자 다르다. 일상·개그만 다루고 줄거리 암시는 두지 않는다.
 const CHAT_CFG={
   monoGap:25,            // 혼잣말 사이 최소 간격(초)
@@ -251,7 +251,7 @@ const CHAT={
 const chatBag={},chatLast={};
 let chatLastMono=performance.now(),chatLastHurt=-1e9,chatPending=null,chatRichStep=-1;
 function chatShuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function chatSub(s){return s.replace(/\{이름\}/g,(P&&P.name)||'루크레아');}
+function chatSub(s){return s.replace(/\{이름\}/g,(P&&P.name)||'루시에라');}
 function chatNext(key,pool){
   let b=chatBag[key];
   if(!b||!b.length){

@@ -242,15 +242,27 @@ for name, sc, home in VIL:
         fr[d] = L
     vils.append(dict(name=name, sc=sc, home=home, w=w, h=h, fr=fr))
 
-# 엘프
+# 플레이어: sandrock에서는 루시에라 5x3 걷기 시트를 우선 사용한다.
+# 850x516 = 170x172 프레임 5칸 x [정면/후면/측면] 3줄.
 el = {}
-for d in ['front', 'back', 'side']:
-    fr = []
-    for i in range(5):
-        im = Image.open(R + f'characters/elf/{d}_{i}.png').convert('RGBA')
-        fr.append(enc(im.resize((170, 172), Image.LANCZOS), 88))
-    el[d] = fr
-face = Image.open(R + 'characters/elf/front_0.png').convert('RGBA').crop((105, 45, 275, 215)).resize((128, 128), Image.LANCZOS)   # 얼굴 중심 정사각
+_player_sheet_path = R + 'characters/luciera_walk.png'
+if os.path.exists(_player_sheet_path):
+    _ps = Image.open(_player_sheet_path).convert('RGBA')
+    if _ps.size != (850, 516):
+        _ps = _ps.resize((850, 516), Image.LANCZOS)
+    for row, d in enumerate(['front', 'back', 'side']):
+        el[d] = [enc(_ps.crop((i*170, row*172, (i+1)*170, (row+1)*172)), 88) for i in range(5)]
+    _f0 = _ps.crop((0, 0, 170, 172))
+    face = _f0.crop((30, 5, 140, 115)).resize((128, 128), Image.LANCZOS)
+else:
+    # 원본 ARPG 에셋 폴백
+    for d in ['front', 'back', 'side']:
+        fr = []
+        for i in range(5):
+            im = Image.open(R + f'characters/elf/{d}_{i}.png').convert('RGBA')
+            fr.append(enc(im.resize((170, 172), Image.LANCZOS), 88))
+        el[d] = fr
+    face = Image.open(R + 'characters/elf/front_0.png').convert('RGBA').crop((105, 45, 275, 215)).resize((128, 128), Image.LANCZOS)
 
 # ---- 본편 반복 등장 캐릭터 초상(기존 사용자 제공 에셋 재사용) ----
 STORY_CHARS={}
@@ -452,7 +464,11 @@ for f in sorted(_g.glob(R + 'ui/hud_icons/*.png')):
     n = os.path.basename(f)[:-4]
     if not n[:2].isdigit() or int(n[:2]) > 27: continue
     im = Image.open(f).convert('RGBA'); im.thumbnail((112, 112), Image.LANCZOS); SKI[n.split('_', 1)[1]] = enc(im, 88)
-ef = Image.open(R + 'characters/elf/front_0.png').convert('RGBA'); ef = ef.crop(ef.getbbox())
+if os.path.exists(_player_sheet_path):
+    ef = Image.open(_player_sheet_path).convert('RGBA').crop((0, 0, 170, 172))
+else:
+    ef = Image.open(R + 'characters/elf/front_0.png').convert('RGBA')
+ef = ef.crop(ef.getbbox())
 ELF_FRONT = enc(ef, 90)
 
 # ---- 필드 7테마 · 몬스터 (런타임 생성용) ----
