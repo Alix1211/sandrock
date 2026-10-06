@@ -383,11 +383,30 @@ document.addEventListener('touchcancel', endJoyTouch, { passive:false });
 // 창 밖으로 나가거나 다른 창을 보면 조이스틱·키 입력을 모두 풀어 줌
 function releaseAll(){ joy.id = null; joyTouch = null; joy.dx = joy.dy = 0; knob.style.transform = ''; homeStick(); for (const k in keys) keys[k] = false; }
 addEventListener('blur', releaseAll); document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
-$('fs').addEventListener('click', () => {
+const fsBtn = $('fs');
+function syncFullscreenButton(){
+  const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  fsBtn.textContent = on ? '↙ 나가기' : '⛶ 전체화면';
+  fsBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+}
+fsBtn.addEventListener('click', async () => {
   const d = document.documentElement;
-  if (!document.fullscreenElement){ (d.requestFullscreen || d.webkitRequestFullscreen || (() => {})).call(d); try { screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }
-  else document.exitFullscreen && document.exitFullscreen();
+  const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  try {
+    if (!on){
+      const req = d.requestFullscreen || d.webkitRequestFullscreen;
+      if (req) await req.call(d);
+      try { await screen.orientation.lock('landscape'); } catch (e) {}
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) await exit.call(document);
+    }
+  } catch (e) {}
+  syncFullscreenButton();
 });
+document.addEventListener('fullscreenchange', syncFullscreenButton);
+document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
+syncFullscreenButton();
 
 // ======================= 창 =======================
 let near = null, panel = null, talking = null;
