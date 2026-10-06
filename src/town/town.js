@@ -28,7 +28,7 @@ const solids = [], spots = [], sprites = [], trees = [], npcs = [], dummies = []
 let lamps = [];
 let townPortalReturn=null,portalArrivalUntil=0;
 let lastVisitedTown={map:'town'};
-const TOWN_PORTAL_X=26.15*TS,TOWN_PORTAL_Y=19.15*TS;
+const TOWN_PORTAL_X=36.0*TS,TOWN_PORTAL_Y=26.8*TS;
 const VILLAGE_PORTAL_X=16*TS,VILLAGE_PORTAL_Y=17.5*TS;
 function portalAnchor(id=MAP){return id==='fieldvillage'?[VILLAGE_PORTAL_X,VILLAGE_PORTAL_Y]:[TOWN_PORTAL_X,TOWN_PORTAL_Y];}
 function normalizeTownHome(h){
@@ -59,7 +59,7 @@ for (const b of CUR.blds){
     exits.push({ x0: b.x - b.w * 0.15, x1: b.x + b.w * 0.15, y0: b.y - b.h * 0.42 - 22, y1: b.y - b.h * 0.42 + 2, to: 'out' });
   } else solids.push({ x0: b.x - fw / 2, x1: b.x + fw / 2, y0: b.y - b.h * 0.36, y1: b.y - b.h * 0.1 });
   sprites.push({ img: BI[b.k], x: b.x, y: b.y, w: b.w, h: b.h, key: b.y - b.h * 0.1 });
-  if(id==='town'&&b.k==='house_blue')spots.push({name:'여관 입구',x:b.x+b.door*b.w,y:b.y-b.h*.06,r:48,kind:'inn_door'});
+  if(id==='town'&&b.k==='inn')spots.push({name:'여관 입구',x:b.x+b.door*b.w,y:b.y-b.h*.06,r:48,kind:'inn_door'});
   if (b.noSpot || b.k === 'watchtower' || hasNpc.has(b.k)) continue;
   spots.push({ name: b.name, x: b.x + b.door * b.w, y: gate ? b.y - b.h * 0.42 - 14 : b.y - b.h * 0.06, r: gate ? 60 : 46, kind: b.kind || (gate ? 'gate' : 'bld'), market: b.market || CUR.market || null });
 }
@@ -106,7 +106,7 @@ buildWorld('town');
 // ======================= 플레이어 =======================
 // 수치 규모: 체력·마나·공격·방어·경험치 같은 정수 수치는 '기준 단위 × NUM'으로 다룬다(세분화된 수치 변화용). 스킬표(SK)·몬스터 기준값 등은 기준 단위로 적고 쓰는 곳에서 곱한다.
 const NUM = 100;
-const P = { name:'루시에라', x:23*TS, y:22.2*TS, r:11, dir:'back', flip:false, moving:false, t:0, gold:300,
+const P = { name:'루시에라', x:58.5*TS, y:46.0*TS, r:11, dir:'back', flip:false, moving:false, t:0, gold:300,
   hp:40*NUM, mp:28*NUM, maxHp:40*NUM, maxMp:28*NUM, lv:1, exp:0, statPts:0, skillPts:0, lifePts:0,
   stats:{str:5,vit:5,int:5,mag:6,dex:8,luck:3},
   mastery:{sword:{lv:0,xp:0},spear:{lv:0,xp:0},gauntlet:{lv:0,xp:0},bow:{lv:0,xp:0},staff:{lv:0,xp:0}},
@@ -491,7 +491,7 @@ async function resumeLocation(st){
     if(window.TELEMETRY)TELEMETRY.enter(locationState());
     return true;
   }catch(e){
-    buildWorld('town');P.x=23*TS;P.y=22.2*TS;P.dir='front';return false;
+    buildWorld('town');P.x=58.5*TS;P.y=46.0*TS;P.dir='front';return false;
   }
 }
 
@@ -500,7 +500,7 @@ function emergencyEscape(){
   traveling=false;closeAll();
   if(typeof PLAYER_STATUS!=='undefined')for(const k in PLAYER_STATUS)PLAYER_STATUS[k]=0;
   P.atk=null;P.moving=false;zones.length=0;P.castRoot=0;
-  buildWorld('town');P.x=23*TS;P.y=22.2*TS;P.dir='front';
+  buildWorld('town');P.x=58.5*TS;P.y=46.0*TS;P.dir='front';
   const safe=nearestSafePosition(P.x,P.y);P.x=safe[0];P.y=safe[1];
   const fade=$('fade');if(fade)fade.classList.remove('on');
   say('끼임 탈출: 큰 마을로 복귀했습니다.');
@@ -720,9 +720,11 @@ $('sellAll').addEventListener('click',()=>{const rows=UI.bagItems().filter(r=>!r
 window.__SHOP={goods:k=>shopGoods(k),tier:()=>levelTier(P.lv),open:openShop,mode:setShopMode,price:sellPrice,buyPrice,baseValue:baseSellValue,rate:sellRate,sellAt,buyAt,clearSelection(){saleConfirm=null;clearShopInfo('물건을 선택해 주세요.');},selectBag(i){const row=UI.bagItems().find(x=>x.i===i);if(row){saleConfirm=null;pickSell(i,row.it,null);}},state:()=>({mode:shopMode,gold:P.gold})};
 
 // ======================= 행인 =======================
-const WP = [[14.5,14],[18,13.6],[28,13.6],[31.5,14],[14.5,19.9],[20,20.7],[26,20.7],[31.5,19.9],[23,13.9],[19.6,16.4],[26.4,16.4],
-  [23,23],[23,27],[22.6,30.2],[10,16.5],[5,16.5],[8,12.2],[36,16.5],[41,16.5],[38,12.4],[11,27.1],[16,27.1],[30.5,27.1],[36,26.9],[41.5,26.4],[15.3,11.3],[31.4,11.3]]
-  .map(([x, y]) => ({ x: x * TS, y: y * TS }));
+const WP = [
+  [28,22],[36,22],[44,22],[24,25.5],[48,25.5],[20,29],[28,29],[44,29],[52,29],
+  [15,14.5],[24,14.5],[36,15.5],[48,14.5],[58,15],[10,25],[10,34],[17,34],[25,42],
+  [36,42],[48,41],[56,39],[61,42],[40,46],[32,46],[39,27],[33,27]
+].map(([x, y]) => ({ x: x * TS, y: y * TS }));
 const VI = {};
 const vils = A.vils.map((v, i) => {
   VI[v.name] = {}; for (const d in v.fr) VI[v.name][d] = v.fr[d].map(load);

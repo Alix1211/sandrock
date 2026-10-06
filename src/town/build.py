@@ -11,7 +11,7 @@ with open(os.path.join(ROOT,'src','story','quests.json'),encoding='utf-8') as qf
     MAIN_QUEST_DATA=json.load(qf)
 TS = 48          # 게임 단위 칸 크기
 PX = 64          # 바닥 그림의 칸당 픽셀
-MW, MH = 46, 32  # 마을 크기(칸)
+MW, MH = 72, 50  # 판타지 워크숍 큰 마을(칸)
 random.seed(7); np.random.seed(7)
 
 CDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.enc_cache')
@@ -58,7 +58,7 @@ def mask_from(sdf, soft=0.12, n=None):
     d = sdf + (N1 if n is None else n)
     return np.clip(0.5 - d / soft, 0, 1)[..., None]
 
-CACHE=os.path.join(HERE, '.ground_cache.png')
+CACHE=os.path.join(HERE, '.ground_sandrock_town_v1.png')
 import os
 def make_ground():
     img = grass.copy()
@@ -69,12 +69,24 @@ def make_ground():
         fm = np.maximum(fm, np.clip(1.4 - np.hypot(xx - cx, yy - cy) / r + N2 * 0.6, 0, 1))
     img = img * (1 - fm[..., None]) + flower * fm[..., None]
 
-    # ---- 길과 광장 (칸 좌표) ----
-    PLAZA = (13, 12.6, 33, 20.4)
-    COBBLE = [PLAZA, (21.2, 20, 24.8, 32.5)]              # 광장 + 성문으로 가는 큰길
-    DIRT = [(3, 15.4, 13.2, 17.6), (32.8, 15.4, 43, 17.6),  # 서·동쪽 흙길
-            (6.8, 10.5, 9.2, 15.6), (36.8, 10.5, 39.2, 15.6), # 촌장 집·전당포 앞
-            (14.3, 9.6, 16.3, 12.8), (30.4, 9.8, 32.4, 12.8)]
+    # ---- 판타지 워크숍 큰 마을: 중앙광장 + 상업/행정/외곽 작업지구 ----
+    PLAZA = (25.0, 17.0, 47.0, 27.8)
+    COBBLE = [
+        PLAZA,
+        (34.0, 8.5, 38.5, 30.0),      # 시청-광장 세로축
+        (10.0, 19.0, 63.5, 23.7),     # 상업 메인거리
+        (14.0, 27.0, 58.5, 30.6),     # 남쪽 상업거리
+        (36.8, 27.0, 41.2, 50.5),     # 연못 우측-정문 큰길
+        (48.0, 34.0, 64.0, 37.0),     # 주거/작업장 연결
+    ]
+    DIRT = [
+        (8.0, 11.5, 63.5, 15.5),      # 북부 행정/연구 지구
+        (7.0, 22.5, 12.0, 42.5),      # 서쪽 자원/창고 지구
+        (58.0, 20.5, 66.0, 45.5),     # 동쪽 생산 지구
+        (10.0, 33.0, 28.0, 36.5),     # 서남 주거/목공
+        (47.0, 39.0, 65.0, 45.5),     # 플레이어/주거 지구
+        (20.5, 41.0, 38.5, 45.0),     # 경비대-정문 연결
+    ]
 
     def union(rects):
         s = np.full((H, W), 1e9, np.float32)
@@ -82,7 +94,7 @@ def make_ground():
         return s
     sd = union(DIRT)
     md = mask_from(sd, 0.25)
-    shade = np.clip(0.5 - (sd + N1 - 0.12) / 0.25, 0, 1)[..., None] - md   # 풀 가장자리 그늘
+    shade = np.clip(0.5 - (sd + N1 - 0.12) / 0.25, 0, 1)[..., None] - md
     img = img * (1 - 0.25 * np.clip(shade, 0, 1))
     img = img * (1 - md) + dirt * md
     sc = union(COBBLE)
@@ -91,10 +103,10 @@ def make_ground():
     img = img * (1 - 0.35 * np.clip(rim, 0, 1))
     img = img * (1 - mc) + cobble * mc
 
-    # 연못(북동쪽)
-    pc = (41.0, 5.0)
-    pd = np.hypot((xx - pc[0]) / 3.4, (yy - pc[1]) / 2.4) - 1 + N2 * 0.08
-    ms = np.clip(0.5 - (pd - 0.28) / 0.1, 0, 1)[..., None]
+    # 남쪽 중앙 연못: 샌드록식 '도시의 기억점'. 큰길은 우측으로 우회한다.
+    pc = (35.0, 34.4)
+    pd = np.hypot((xx - pc[0]) / 5.8, (yy - pc[1]) / 2.6) - 1 + N2 * 0.06
+    ms = np.clip(0.5 - (pd - 0.26) / 0.10, 0, 1)[..., None]
     mw = np.clip(0.5 - pd / 0.06, 0, 1)[..., None]
     img = img * (1 - ms) + sand * ms
     img = img * (1 - mw) + water * mw
@@ -139,81 +151,82 @@ def bake_shadows(base, items):
     arr = arr * (1 - m) + tint * m
     return Image.fromarray(arr.clip(0, 255).astype(np.uint8))
 
-# ---- 건물 ----
-# key, 이름, 중심x, 바닥y, 폭(칸), 문 x 보정(폭 비율)
+# ---- 판타지 워크숍 큰 마을 건물 ----
+# key, art, 이름, 중심x, 바닥y, 폭(칸), 문 x 보정(폭 비율)
 B = [
- ('guild_hall', '길드 홀', 23, 12.4, 5.6, 0),
- ('scholar_dome', '학자의 집', 15.3, 10.0, 4.6, 0),
- ('manor_vault', '마을 금고', 31.4, 10.0, 5.6, 0),
- ('cottage_thatch', '촌장 집', 8.0, 10.6, 4.6, 0.02),
- ('townhouse_pawn', '전당포', 38.0, 10.6, 3.6, 0),
- ('house_blue', '여관', 7.0, 15.2, 4.4, -0.05),
- ('house_red', '민가', 3.6, 25.0, 4.6, 0),
- ('tavern', '술집', 15.0, 25.6, 5.2, 0.05),
- ('shop_general', '잡화점', 19.0, 21.6, 4.4, -0.08) if False else ('shop_general', '잡화점', 9.8, 24.4, 4.6, -0.08),
- ('shop_weapons', '무기·방어구점', 30.6, 25.6, 4.8, 0),
- ('smithy', '대장간', 36.2, 25.2, 5.0, -0.05),
- ('shop_tools', '교역소', 41.6, 24.6, 4.6, 0),
- ('watchtower', '망루', 17.6, 31.6, 2.6, 0),
- ('watchtower', '망루', 28.4, 31.6, 2.6, 0),
- ('gate_twin_tower', '성문 (성 밖으로)', 23, 32.4, 6.6, 0),
+ ('general_store',   'shop_general',   '잡화점',       27.0, 21.0, 4.5, -0.06),
+ ('workshop',        'shop_tools',     '공방',         61.0, 44.2, 5.4,  0.00),
+ ('carpentry',       'cottage_thatch', '목공소',       18.0, 35.0, 5.0,  0.00),
+ ('research_center', 'scholar_dome',   '연구센터',     24.0, 13.4, 5.2,  0.00),
+ ('city_hall',       'castle',         '시청',         36.0, 12.8, 6.8,  0.00),
+ ('recycling',       'smithy',         '재활용소',      9.5, 24.7, 5.0, -0.04),
+ ('material_shop',   'shop_general',   '재료상',       45.0, 21.0, 4.5,  0.05),
+ ('blacksmith',      'smithy',         '대장간',       58.0, 22.0, 5.2, -0.05),
+ ('clothing',        'townhouse_pawn', '의류점',       51.5, 21.0, 4.4,  0.00),
+ ('mine_office',     'manor_vault',    '광산 관리소',  13.0, 13.8, 5.0,  0.00),
+ ('guild_hall',      'guild_hall',     '길드',         36.0, 18.0, 5.8,  0.00),
+ ('post_office',     'house_blue',     '우체국',       20.5, 21.0, 4.4,  0.00),
+ ('inn',             'tavern',         '여관',         36.0, 30.0, 5.3,  0.02),
+ ('restaurant',      'tavern',         '식당',         28.0, 30.0, 5.0,  0.02),
+ ('pharmacy',        'shop_general',   '약방',         44.0, 30.0, 4.4, -0.04),
+ ('warehouse',       'manor_vault',    '창고',          9.5, 35.0, 5.2,  0.00),
+ ('trading_post',    'shop_tools',     '교역소',       51.0, 30.0, 4.8,  0.00),
+ ('residence',       'house_red',      '민가',         53.0, 40.5, 4.8,  0.00),
+ ('ruin_office',     'scholar_dome',   '유적 관리소',  58.0, 13.8, 5.1,  0.00),
+ ('community_hall',  'guild_hall',     '마을회관',     47.5, 13.4, 5.2,  0.00),
+ ('mansion',         'manor_vault',    '저택',         61.0, 35.2, 5.6,  0.00),
+ ('abandoned',       'cottage_thatch', '폐건물',       10.5, 42.3, 4.8,  0.00),
+ ('guard_hq',        'guild_hall',     '경비대',       26.0, 43.5, 6.0,  0.00),
+ ('gate_twin_tower', 'gate_twin_tower','정문 (성 밖으로)',36.0, 50.0, 7.0, 0.00),
 ]
-SCALE = 1.5   # 게임 단위 대비 그림 해상도
+SCALE = 1.5
 imgs = {}
-for k in sorted(set(b[0] for b in B)):
-    im = Image.open(R + f'buildings/{k}.png').convert('RGBA')
-    imgs[k] = im
+for _, art, _, _, _, _, _ in B:
+    if art in imgs: continue
+    imgs[art] = Image.open(R + f'buildings/{art}.png').convert('RGBA')
 blds = []
 assets = {}
-for k, name, cx, by, wt, dxr in B:
-    im = imgs[k]
+for k, art, name, cx, by, wt, dxr in B:
+    im = imgs[art]
     w = wt * TS; h = w * im.height / im.width
     if k not in assets:
         assets[k] = enc(im.resize((round(w * SCALE), round(h * SCALE)), Image.LANCZOS))
-    blds.append(dict(k=k, name=name, x=cx * TS, y=by * TS, w=w, h=h, door=dxr))
+    blds.append(dict(k=k, art=art, name=name, x=cx * TS, y=by * TS, w=w, h=h, door=dxr))
 
 # 소품 (건물 부품 중 바닥에 세울 수 있는 것만)
 # 소품: key, 이름(살펴보기), x, 바닥y, 폭(칸), 충돌(폭 비율, 깊이 칸) — 충돌 0이면 통과
 TP = 'town_props/'; BP = 'building_parts/'
 P = [
- (TP+'personal_stash_closed', '개인 창고', 27.8, 25.8, 1.3, (0.8, 0.45)),
- (TP+'fountain', None, 23.0, 18.4, 4.0, (0.86, 1.3)),
- (TP+'lamp_iron', None, 13.7, 13.3, 1.0, (0.5, 0.3)), (TP+'lamp_iron', None, 32.3, 13.3, 1.0, (0.5, 0.3)),
- (TP+'lamp_iron', None, 13.7, 20.8, 1.0, (0.5, 0.3)), (TP+'lamp_iron', None, 32.3, 20.8, 1.0, (0.5, 0.3)),
- (TP+'lamp_wood', None, 20.7, 24.0, 1.1, (0.4, 0.3)), (TP+'lamp_wood', None, 25.3, 24.0, 1.1, (0.4, 0.3)),
- (TP+'lamp_wood', None, 20.7, 28.4, 1.1, (0.4, 0.3)), (TP+'lamp_wood', None, 25.3, 28.4, 1.1, (0.4, 0.3)),
- (TP+'lamp_wood', None, 12.6, 15.2, 1.1, (0.4, 0.3)), (TP+'lamp_wood', None, 33.4, 15.2, 1.1, (0.4, 0.3)),
- (TP+'bench_iron', None, 18.2, 20.0, 2.0, (0.9, 0.5)), (TP+'bench_iron', None, 27.8, 20.0, 2.0, (0.9, 0.5)),
- (TP+'bench_stone', None, 17.6, 14.3, 2.1, (0.9, 0.5)),
- (TP+'stall_blue', '과일 노점', 15.6, 17.6, 3.0, (0.85, 0.9)), (TP+'stall_red', '물약 노점', 30.4, 17.6, 3.0, (0.85, 0.9)),
- (TP+'flag_pole', None, 19.4, 12.7, 1.2, (0.4, 0.3)), (TP+'flag_pole', None, 26.6, 12.7, 1.2, (0.4, 0.3)),
- (BP+'part_36', '의뢰 게시판', 28.2, 13.3, 1.5, (0.8, 0.3)),
- (TP+'urn_flowers', None, 20.5, 12.9, 0.9, (0.7, 0.3)), (TP+'urn_flowers', None, 25.5, 12.9, 0.9, (0.7, 0.3)),
- (TP+'well', '우물', 4.6, 20.4, 2.4, (0.8, 0.9)),
- (BP+'part_35', None, 9.4, 15.6, 0.7, (0.6, 0.3)),
- (TP+'pot_flowers', None, 5.0, 15.4, 0.9, (0.7, 0.3)),
- (TP+'flowerbed_stone', None, 12.4, 10.8, 1.9, (0.9, 0.5)), (TP+'flowerbed_stone', None, 18.2, 10.6, 1.9, (0.9, 0.5)),
- (TP+'flowerbed_wood', None, 34.6, 10.8, 1.8, (0.9, 0.5)),
- (TP+'barrel_bucket', None, 12.4, 26.0, 1.4, (0.8, 0.4)), (BP+'part_38', None, 18.0, 26.0, 0.9, (0.9, 0.4)),
- (TP+'barrel_bucket', None, 33.4, 25.8, 1.4, (0.8, 0.4)),
- (TP+'woodpile', None, 39.0, 25.9, 1.9, (0.9, 0.5)), (TP+'hay', None, 44.6, 21.6, 1.8, (0.85, 0.6)),
- (TP+'cart', None, 44.2, 27.4, 2.4, (0.85, 0.6)),
- (TP+'signpost', '이정표', 25.9, 21.4, 1.2, (0.4, 0.3)),
- (TP+'fence_h', None, 1.3, 27.4, 1.9, (1, 0.25)), (TP+'fence_h', None, 3.1, 27.4, 1.9, (1, 0.25)), (TP+'fence_h', None, 4.9, 27.4, 1.9, (1, 0.25)),
- (TP+'fence_corner', None, 6.6, 27.4, 1.7, (1, 0.25)),
- (TP+'fence_h', None, 4.2, 12.0, 1.9, (1, 0.25)), (TP+'fence_h', None, 11.8, 12.0, 1.9, (1, 0.25)),
- (TP+'bush_white', None, 9.9, 12.0, 1.2, (0.8, 0.4)), (TP+'bush_red', None, 2.4, 12.0, 1.2, (0.8, 0.4)),
- (TP+'bush_red', None, 27.6, 10.4, 1.2, (0.8, 0.4)), (TP+'bush_white', None, 35.0, 12.4, 1.2, (0.8, 0.4)),
- (TP+'bush_white', None, 41.0, 12.6, 1.2, (0.8, 0.4)), (TP+'bush_red', None, 7.8, 21.0, 1.2, (0.8, 0.4)),
- (TP+'bush_white', None, 26.6, 26.4, 1.2, (0.8, 0.4)), (TP+'bush_red', None, 19.6, 26.4, 1.2, (0.8, 0.4)),
- (TP+'rock_1', None, 37.4, 4.6, 1.4, (0.8, 0.4)), (TP+'rock_2', None, 44.6, 7.8, 1.4, (0.8, 0.4)),
- (TP+'tree_big', None, 2.4, 5.0, 4.0, (0.16, 0.3)), (TP+'tree_small', None, 5.6, 7.4, 3.0, (0.16, 0.3)),
- (TP+'tree_big', None, 22.0, 4.6, 4.0, (0.16, 0.3)), (TP+'tree_blossom', None, 26.4, 6.6, 3.2, (0.16, 0.3)),
- (TP+'tree_blossom', None, 19.2, 7.0, 3.2, (0.16, 0.3)), (TP+'tree_small', None, 35.0, 6.0, 3.0, (0.16, 0.3)),
- (TP+'tree_big', None, 44.0, 16.6, 4.0, (0.16, 0.3)), (TP+'tree_small', None, 2.0, 19.6, 3.0, (0.16, 0.3)),
- (TP+'tree_blossom', None, 8.2, 30.0, 3.2, (0.16, 0.3)), (TP+'tree_big', None, 13.2, 31.6, 4.0, (0.16, 0.3)),
- (TP+'tree_big', None, 33.2, 31.6, 4.0, (0.16, 0.3)), (TP+'tree_small', None, 38.6, 30.6, 3.0, (0.16, 0.3)),
- (TP+'tree_blossom', None, 43.8, 31.0, 3.2, (0.16, 0.3)), (TP+'tree_small', None, 12.0, 6.4, 3.0, (0.16, 0.3)),
+ (TP+'personal_stash_closed','개인 창고',59.0,45.1,1.3,(0.8,0.45)),
+ (TP+'fountain',None,36.0,25.2,4.2,(0.86,1.3)),
+ (BP+'part_36','의뢰 게시판',40.2,18.9,1.5,(0.8,0.3)),
+ (TP+'signpost','이정표',39.8,28.2,1.2,(0.4,0.3)),
+ (TP+'well','우물',49.0,39.0,2.4,(0.8,0.9)),
+ (TP+'stall_blue','노점',23.5,25.5,3.0,(0.85,0.9)),
+ (TP+'stall_red','노점',48.5,25.5,3.0,(0.85,0.9)),
+ (TP+'bench_iron',None,31.0,26.3,2.0,(0.9,0.5)),
+ (TP+'bench_iron',None,41.0,26.3,2.0,(0.9,0.5)),
+ (TP+'bench_stone',None,36.0,28.2,2.1,(0.9,0.5)),
+ (TP+'woodpile',None,20.0,35.8,1.9,(0.9,0.5)),
+ (TP+'hay',None,21.8,35.8,1.8,(0.85,0.6)),
+ (TP+'cart',None,12.0,36.2,2.4,(0.85,0.6)),
+ (TP+'barrel_bucket',None,56.0,22.7,1.4,(0.8,0.4)),
+ (TP+'barrel_bucket',None,49.5,30.8,1.4,(0.8,0.4)),
+ (TP+'lamp_iron',None,27.0,24.2,1.0,(0.5,0.3)),
+ (TP+'lamp_iron',None,45.0,24.2,1.0,(0.5,0.3)),
+ (TP+'lamp_iron',None,31.0,18.0,1.0,(0.5,0.3)),
+ (TP+'lamp_iron',None,41.0,18.0,1.0,(0.5,0.3)),
+ (TP+'lamp_wood',None,38.8,31.0,1.1,(0.4,0.3)),
+ (TP+'lamp_wood',None,40.0,39.0,1.1,(0.4,0.3)),
+ (TP+'tree_big',None,18.0,17.2,4.0,(0.16,0.3)),
+ (TP+'tree_blossom',None,23.0,17.0,3.2,(0.16,0.3)),
+ (TP+'tree_big',None,50.0,17.0,4.0,(0.16,0.3)),
+ (TP+'tree_small',None,55.0,17.5,3.0,(0.16,0.3)),
+ (TP+'tree_big',None,28.5,37.8,4.0,(0.16,0.3)),
+ (TP+'tree_small',None,43.5,38.0,3.0,(0.16,0.3)),
+ (TP+'tree_blossom',None,47.0,45.0,3.2,(0.16,0.3)),
+ (TP+'tree_big',None,67.0,31.0,4.0,(0.16,0.3)),
+ (TP+'tree_small',None,5.0,30.0,3.0,(0.16,0.3)),
 ]
 props = []
 for k, name, cx, by, wt, col in P:
@@ -229,7 +242,7 @@ _stash_width=1.3*TS*SCALE
 assets['personal_stash_open']=enc(_stash_open.resize((round(_stash_width),round(_stash_width*_stash_open.height/_stash_open.width)),Image.LANCZOS))
 
 # 행인 걷기 (옆모습은 왼쪽을 봄)
-VIL = [('youth', 1.0, 'house_red'), ('kid', 0.82, 'house_blue'), ('grandpa', 0.95, 'cottage_thatch'), ('maiden', 0.97, 'tavern'), ('auntie', 0.97, 'shop_general')]
+VIL = [('youth', 1.0, 'residence'), ('kid', 0.82, 'inn'), ('grandpa', 0.95, 'community_hall'), ('maiden', 0.97, 'restaurant'), ('auntie', 0.97, 'general_store')]
 vils = []
 for name, sc, home in VIL:
     fr = {}
@@ -246,8 +259,13 @@ for name, sc, home in VIL:
 # 850x516 = 170x172 프레임 5칸 x [정면/후면/측면] 3줄.
 el = {}
 _player_sheet_path = R + 'characters/luciera_walk.png'
+_ps = None
 if os.path.exists(_player_sheet_path):
-    _ps = Image.open(_player_sheet_path).convert('RGBA')
+    try:
+        _ps = Image.open(_player_sheet_path).convert('RGBA')
+    except Exception:
+        _ps = None
+if _ps is not None:
     if _ps.size != (850, 516):
         _ps = _ps.resize((850, 516), Image.LANCZOS)
     for row, d in enumerate(['front', 'back', 'side']):
@@ -301,23 +319,31 @@ for k in ['03', '04', '05', '06', '14', '15']:
 # ---- 사람 (시나리오 장부 번호 = 초상화 번호) ----
 # 번호, 이름, 직함, 건물 key(문 옆에 섬) 또는 None, x, y(칸, 건물 없을 때), 왼쪽(-1)/오른쪽(1), 첫마디, 가게 종류
 NPC = [
- (5,  '토비', '여관 주인', 'house_blue', 1, '아, 왔네요. 방은 그대로예요. 이불은 아침에 널어뒀고요. 비 오기 전에 걷어야 하는데…', 'inn'),
- (21, '마르코', '잡화점 주인', 'shop_general', 1, '잠깐만요, 저울추 하나가 또 안 보이네요… 물건 보실 거면 그냥 보세요. 제가 찾으면서 대답할게요.', 'general'),
- (23, '루나', '무기·방어구점 주인', 'shop_weapons', -1, '그거 내려놔요. 손잡이 먼저 잡아봐요. 무기는 눈으로 고르는 거 아니니까.', 'arms'),
- (42, '그레타', '대장간 주인', 'smithy', 1, '뭐라고? 망치 소리 때문에 안 들려. 가까이 와서 말해. 핀, 불 좀 더 올리고!', None),
- (12, '핀', '교역소 직원', 'shop_tools', -1, '오늘 장부가 좀 이상해요. 아니, 장부가 아니라 사람들이 이상한 건가… 아무튼 시세는 여기 적어뒀습니다.', 'trade'),
- (40, '브란', '술집 주인', 'tavern', 1, '앉아. 주문 안 해도 돼. 오래 앉아 있으면 그때부터 눈치 줄 거니까.', None),
- (39, '하르트', '길드장', 'guild_hall', -1, '왔나? 게시판은 저기고, 난 지금 무릎이랑 협상 중이네. 둘 다 말을 안 들어.', 'guild'),
- (29, '에드먼', '학자', 'scholar_dome', 1, '아, 잠깐만요. 그 책 밟지 마십시오. 아니, 그건 책이 아니라 상자군요. 어쨌든 거기 서 계세요.', None),
- (43, '페닉스', '금고 관리인', 'manor_vault', -1, '잠시만요. 열쇠가 열셋… 열넷… 맞군요. 이제 말씀하시죠.', None),
- (28, '고르던', '전당포 주인', 'townhouse_pawn', -1, '어서 오게. 물건은 천천히 꺼내. 급하게 꺼내는 사람 물건은 대개 사연이 붙어 있더군.', 'pawn'),
- (15, '오토', '촌장', 'cottage_thatch', 1, '허허, 왔나. 방금 차를 너무 진하게 우려서 말이지. 젊을 땐 이런 것도 잘 맞췄는데.', None),
- (1,  '라이너', '성문 경비병', ('gate', 21.85, 31.7), 1, '출입 기록부터… 아, 또 자네군요. 이름은 압니다. 그래도 적는 건 적어야 합니다.', None),
- (2,  '에다', '성문 경비병', ('gate', 24.15, 31.7), -1, '또 나가? 라이너는 기록부터 하라겠지만 난 신발부터 볼래. 진흙 묻은 채로 들어오지 마.', None),
- (6,  '미나', '꽃장수', ('free', 19.0, 18.6), 1, '저기… 오늘은 노란 꽃이 좀 많이 폈어요. 어제는 하나도 없었는데. 이상하죠?', None),
+ (1,  '마르코','잡화점 주인',      'general_store',   1,'오늘은 물건보다 사람이 먼저 들어오네요. 천천히 둘러보세요.','general'),
+ (2,  '레오',  '공방 관리인',      'workshop',       -1,'아침부터 톱밥이 날리더니 이제야 좀 조용해졌네요.',None),
+ (3,  '하겐',  '목공소 주인',      'carpentry',       1,'나무는 결을 거슬러 자르면 꼭 티를 냅니다. 사람도 비슷하고요.',None),
+ (4,  '에드먼','연구원',           'research_center',-1,'잠깐만요. 방금 떠오른 걸 적고 있었는데… 네, 이제 말씀하시죠.',None),
+ (5,  '오토',  '시청 담당관',      'city_hall',       1,'광장 쪽 공사가 끝나니 민원이 절반은 줄었군요. 나머지 절반은 사람 문제고요.',None),
+ (6,  '리코',  '재활용소 주인',    'recycling',      -1,'버리는 것과 쓸모없는 건 다른 말입니다. 여기선 특히 그래요.',None),
+ (7,  '미라',  '재료상',           'material_shop',   1,'재료는 눈으로만 보면 다 비슷해요. 손에 올려보면 바로 다르죠.','general'),
+ (8,  '그레타','대장장이',         'blacksmith',     -1,'불 가까이 오지 마요. 말은 들리니까 거기서 해도 됩니다.','arms'),
+ (9,  '루나',  '의류점 주인',      'clothing',        1,'옷은 멀쩡해 보여도 실밥 하나가 하루 종일 신경 쓰일 때가 있죠.',None),
+ (10, '도란',  '광산 관리인',      'mine_office',    -1,'오늘 갱도 보고서는 아직 덜 왔습니다. 늘 그렇죠.',None),
+ (11, '하르트','길드장',           'guild_hall',      1,'게시판은 새로 정리했습니다. 누가 순서를 또 바꾸지만 않으면요.','guild'),
+ (12, '리아',  '우체국 직원',      'post_office',    -1,'편지는 쌓이는데 사람은 늘 급하네요. 그래도 잃어버리진 않습니다.',None),
+ (13, '토비',  '여관 주인',        'inn',             1,'방은 비어 있어요. 불도 지펴놨고요. 들어가실 거면 말씀하세요.','inn'),
+ (14, '브란',  '식당 주인',        'restaurant',     -1,'냄비는 끓고 있고 자리는 남았습니다. 둘 중 하나는 금방 없어지겠죠.',None),
+ (15, '세라',  '약사',             'pharmacy',        1,'약초 냄새가 좀 세죠? 익숙해지면 오히려 밖이 밋밋합니다.','general'),
+ (16, '모건',  '창고지기',         'warehouse',      -1,'들어온 상자보다 나간 상자가 적군요. 오늘도 정리할 게 많겠습니다.',None),
+ (17, '핀',    '교역소 직원',      'trading_post',    1,'시세판은 아침에 갈았습니다. 오후엔 또 달라질지도 모르지만요.','trade'),
+ (18, '미나',  '주민',             'residence',      -1,'집 앞이 전보다 조용해졌어요. 광장 쪽으로 사람들이 몰려서 그런가 봐요.',None),
+ (19, '베른',  '유적 관리인',      'ruin_office',     1,'유적에서 가져온 건 먼저 기록부터 합니다. 손대는 건 그다음이고요.',None),
+ (20, '엘다',  '마을회관 관리인',  'community_hall', -1,'회의가 끝나면 의자가 꼭 하나씩 엉뚱한 데 가 있습니다.',None),
+ (21, '페닉스','저택 관리인',      'mansion',         1,'주인께선 안에 계십니다. 만나실 수 있다는 뜻은 아니지만요.',None),
+ (22, '고르던','폐건물 관리인',    'abandoned',      -1,'폐건물이라고 아무나 들어가도 되는 건 아닙니다. 바닥이 먼저 항의할 겁니다.',None),
+ (23, '라이너','경비병',           'guard_hq',        1,'순찰 교대까지 조금 남았습니다. 정문 쪽은 이상 없습니다.',None),
+ (24, '에다',  '경비병',           'guard_hq',       -1,'라이너는 기록부터 보고, 나는 사람 얼굴부터 봐요. 둘 다 필요하죠.',None),
 ]
-for qn in MAIN_QUEST_DATA.get('npcs',[]):
-    NPC.append((qn['no'],qn['name'],qn['title'],tuple(qn['where']),qn.get('side',1),qn.get('line',''),None))
 bpos = {b['k']: b for b in blds}
 PORT = {}
 npcs = []
@@ -404,10 +430,10 @@ inn_props = [
     _inn_prop('bench','int_31',4.1,8.0,2.2,.88,.35),
     _inn_prop('cabinet','int_36',12.0,6.75,1.35,.78,.48),
 ]
-_toby = next(n for n in npcs if n['no'] == 5)
-inn_npcs = [dict(k='npc_05', no=5, name='토비', title='여관 주인', x=9.5*TS, y=4.35*TS,
+_toby = next(n for n in npcs if n['no'] == 13)
+inn_npcs = [dict(k='npc_13', no=13, name='토비', title='여관 주인', x=9.5*TS, y=4.35*TS,
                  w=_toby['w'], h=_toby['h'], line='왔네요. 불가 쪽 자리는 따뜻해요. 아까 누가 젖은 장갑을 올려놔서 냄새는 조금 나지만요.', shop='inn', at=None)]
-INN_BACK = [7.0*TS, 15.85*TS]
+INN_BACK = [bpos['inn']['x'], bpos['inn']['y'] + 0.72*TS]
 INN = dict(
     map=dict(w=INN_W,h=INN_H,ts=TS,px=PX), ground=enc(inn_ground,86),
     mini=enc(inn_ground.resize((INN_W*6,INN_H*6),Image.LANCZOS),86),
@@ -431,7 +457,7 @@ for kind,row in [('ring',0),('neck',1)]:
     ICON[kind]=ICON[f'acc_{row}_01']
 
 
-SH = [dict(path=R + f"buildings/{b['k']}.png", x=b['x'], y=b['y'], w=b['w'], h=b['h'], sq=0.5 if b['k'] in ('watchtower','gate_twin_tower') else 0.42) for b in blds]
+SH = [dict(path=R + f"buildings/{b['art']}.png", x=b['x'], y=b['y'], w=b['w'], h=b['h'], sq=0.5 if b['k'] == 'gate_twin_tower' else 0.42) for b in blds]
 SH += [dict(path=R + p['path'] + '.png', x=p['x'], y=p['y'], w=p['w'], h=p['h'], sq=0.55 if p['tree'] else 0.5, foot=0.03) for p in props]
 ground = bake_shadows(ground, SH)
 mini = ground.resize((MW * 6, MH * 6), Image.LANCZOS)
