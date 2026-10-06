@@ -1,0 +1,37 @@
+name: guild-rank-smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/town/guild.js'
+      - 'src/town/check_guild_rank.py'
+      - '.github/workflows/guild-rank-smoke.yml'
+
+jobs:
+  rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            src/town/.enc_cache
+            src/town/.ground_cache.png
+            src/town/.ground_out_cache.png
+          key: guild-rank-${{ runner.os }}-${{ hashFiles('src/town/build.py', 'src/town/outmap.py', 'assets/**') }}
+          restore-keys: |
+            guild-rank-${{ runner.os }}-
+            town-build-${{ runner.os }}-
+      - run: |
+          pip install pillow numpy scipy playwright
+          python -m playwright install --with-deps chromium
+      - run: |
+          node --check src/town/guild.js
+          node --check src/town/town.js
+          node --check src/town/field_dungeon.js
+          python src/town/build.py
+          python src/town/check_guild_rank.py
