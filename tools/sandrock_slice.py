@@ -157,6 +157,8 @@ if __name__ == '__main__':
     sheet('bld_sheet_8.png', 'buildings', N.BUILDINGS[:8])
     for i, (key, label) in enumerate(N.BUILDINGS[8:], 9):
         single(f'bld_{i:02d}.png', 'buildings', key, label)
+    for key, label in N.HOUSES:
+        single(f'{key}.png', 'houses', key, label)
     for i in range(5):
         sheet(f'npc_sheet_{i + 1}.png', 'npcs', N.NPCS[i * 5:i * 5 + 5])
     for i in range(6):

@@ -68,3 +68,6 @@ TOOLS = [('axe_stone', '돌 도끼'), ('pick_stone', '돌 곡괭이'), ('axe_cop
          ('axe_bronze', '청동 도끼'), ('pick_bronze', '청동 곡괭이'), ('axe_iron', '철 도끼'), ('pick_iron', '철 곡괭이'),
          ('axe_steel', '강철 도끼'), ('pick_steel', '강철 곡괭이'), ('axe_mana', '마력 도끼'), ('pick_mana', '마력 곡괭이'),
          ('axe_mithril', '미스릴 도끼'), ('pick_mithril', '미스릴 곡괭이'), ('axe_magic', '마법 도끼'), ('pick_magic', '마법 곡괭이')]
+
+# 남의 집(들어갈 수 없는 주민 집) 10채 — 케인 2026-10-07, 한 채씩 그린 그림
+HOUSES = [('house_%02d' % i, '주민 집 %d' % i) for i in range(1, 11)]

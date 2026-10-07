@@ -195,6 +195,86 @@
    1226
   ]
  },
+ "houses/house_01": {
+  "name": "주민 집 1",
+  "src": "house_01.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_02": {
+  "name": "주민 집 2",
+  "src": "house_02.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_03": {
+  "name": "주민 집 3",
+  "src": "house_03.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_04": {
+  "name": "주민 집 4",
+  "src": "house_04.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_05": {
+  "name": "주민 집 5",
+  "src": "house_05.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_06": {
+  "name": "주민 집 6",
+  "src": "house_06.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_07": {
+  "name": "주민 집 7",
+  "src": "house_07.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_08": {
+  "name": "주민 집 8",
+  "src": "house_08.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_09": {
+  "name": "주민 집 9",
+  "src": "house_09.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
+ "houses/house_10": {
+  "name": "주민 집 10",
+  "src": "house_10.png",
+  "size": [
+   1254,
+   1254
+  ]
+ },
  "npcs/general_store": {
   "name": "잡화점",
   "src": "npc_sheet_1.png",
@@ -1293,7 +1373,7 @@
  },
  "icons/brass_ingot": {
   "name": "놋쇠 주괴",
-  "src": "icon_sheet_2.png",
+  "src": "icons/brass_ingot 색 변환",
   "size": [
    203,
    163
@@ -2129,6 +2209,14 @@
   "size": [
    277,
    330
+  ]
+ },
+ "icons/bronze_ingot": {
+  "name": "청동 주괴",
+  "src": "icons/copper_ingot 색 변환",
+  "size": [
+   201,
+   163
   ]
  }
 }
