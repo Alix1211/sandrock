@@ -586,7 +586,7 @@ for key, label in SN.NPCS:
 sg = bake_shadows(sg, sshadow)
 SAND = dict(map=dict(w=sandmap.SAND_W, h=sandmap.SAND_H, ts=TS, px=PX), ground=enc(sg, 80),
             mini=enc(sg.resize((sandmap.SAND_W * 6, sandmap.SAND_H * 6), Image.LANCZOS), 80),
-            blds=sblds, props=sprops, npcs=snpcs, name='새 마을', solids=sandmap.pond_solids(TS),
+            blds=sblds, props=sprops, npcs=snpcs, name='새 마을', solids=sandmap.pond_solids(TS) + sandmap.edge_solids(TS),
             spawn=[sandmap.SPAWN[0] * TS, sandmap.SPAWN[1] * TS])
 
 # ---- 던전 타일·소품: 두 가지 모습 (ruins=성 밖 입구의 석조 던전, cave=필드 동굴 입구의 자연 동굴) ----

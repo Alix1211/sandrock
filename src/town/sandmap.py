@@ -27,6 +27,32 @@ DIRT = [
 ]
 POND = (35.0, 34.4, 5.8, 2.6)     # 중심x, 중심y, 반지름x, 반지름y
 
+# 걸어 다닐 수 있는 마을 영역(칸). 밖은 막고 어둡게 — 필드와 같은 방식(칸 단위 어둠 + 15px 페더).
+TOWN_AREA = (6, 10, 66, 50)       # x0, y0, x1, y1 (칸, x1·y1 미포함)
+TOWN_CORNER = 3                   # 모서리 둥글림(칸)
+DARK = (18, 62, 24, 0.49)         # 필드 봄 테마와 같은 어둠 색·진하기
+FEATHER = 15                      # 게임 픽셀 기준 페더(필드와 동일)
+
+
+def walkable(x, y):
+    x0, y0, x1, y1 = TOWN_AREA
+    if not (x0 <= x < x1 and y0 <= y < y1): return False
+    r = TOWN_CORNER
+    cx = min(max(x + 0.5, x0 + r), x1 - r); cy = min(max(y + 0.5, y0 + r), y1 - r)
+    return (x + 0.5 - cx) ** 2 + (y + 0.5 - cy) ** 2 <= r * r
+
+
+def edge_solids(TS):
+    out = []
+    for y in range(SAND_H):
+        x = 0
+        while x < SAND_W:
+            if walkable(x, y): x += 1; continue
+            s = x
+            while x < SAND_W and not walkable(x, y): x += 1
+            out.append(dict(x0=s * TS, x1=x * TS, y0=y * TS, y1=(y + 1) * TS))
+    return out
+
 # 건물: assets/sandrock/buildings/<key>.png, 중심x, 바닥y, 폭(칸), 문 x 보정(폭 비율)
 BLDS = [
     ('city_hall',       36.0, 12.8, 6.6, 0.00),
@@ -131,8 +157,15 @@ def gen_ground(R, px, seed, cache):
     ms = np.clip(0.5 - (pd - 0.26) / 0.10, 0, 1)[..., None]
     mwt = np.clip(0.5 - pd / 0.06, 0, 1)[..., None]
     img = img * (1 - ms) + sand * ms; img = img * (1 - mwt) + water * mwt
-    v = np.clip(np.minimum(np.minimum(xx, mw - xx), np.minimum(yy, mh - yy)) / 2.5, 0, 1)[..., None]
-    img = img * (0.72 + 0.28 * v)
+    # 못 가는 곳: 칸 단위로 어둡게 칠한 뒤 페더(필드 field_dungeon.js와 같은 방식)
+    shade = np.zeros((mh, mw), np.float32)
+    for y in range(mh):
+        for x in range(mw):
+            if not walkable(x, y): shade[y, x] = 1
+    shade = np.kron(shade, np.ones((px, px), np.float32))
+    shade = nd.gaussian_filter(shade, FEATHER * px / 48)
+    a = DARK[3] * shade[..., None]
+    img = img * (1 - a) + np.array(DARK[:3], np.float32) * a
     g = Image.fromarray(img.clip(0, 255).astype(np.uint8)); g.save(cache); return g
 
 
