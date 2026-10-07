@@ -264,7 +264,7 @@ const MM_BTN = 'townPortal', mmBtn = $('mmPortal'), mmCd = $('mmPortalCd');
 function syncMmBtn(){
   const r = (G.P.lifeSkills && G.P.lifeSkills.townPortal) || 0, left = (G.P.portalReadyAt || 0) - Date.now(), loc = G.locationState && G.locationState();
   mmBtn.style.backgroundImage = `url(${lifeIcon(MM_BTN)})`;
-  const sc = SCR.portal, inTown = !!(loc && (loc.map === 'town' || loc.map === 'inn'));
+  const sc = SCR.portal, inTown = !!(loc && (loc.map === 'town' || loc.map === 'sand' || loc.map === 'inn'));
   mmBtn.classList.toggle('off', inTown || (!(r && left <= 0) && !sc));
   mmCd.textContent = !r ? '' : left > 0 ? (left > 60000 ? Math.ceil(left / 60000) + '분' : Math.ceil(left / 1000) + '초') : '';
   $('mmPortalScr').textContent = sc ? sc : '';

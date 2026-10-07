@@ -360,7 +360,7 @@ function regionBtnHtml(r){
 function fillRegionGrid(mode){
   const gr=$('regionGrid'); gr.innerHTML='';
   $('regionNote').textContent = mode==='village' ? '이동 가능한 지역만 선택할 수 있습니다. 다음 지역은 레벨 또는 이야기 진행으로 열립니다.' : '봄 초원부터 시작합니다. 다음 지역은 10레벨 단위 또는 이야기 진행으로 순서대로 열립니다.';
-  if (mode==='village'){ const b=document.createElement('button'); b.type='button'; b.dataset.theme='town'; b.innerHTML='큰 마을<small>바로 돌아갑니다</small>'; b.onclick=()=>{ closeRegionSelect(); returnFromField(); }; gr.append(b); }
+  if (mode==='village'){ const b=document.createElement('button'); b.type='button'; b.dataset.theme='town'; b.innerHTML='마을<small>바로 돌아갑니다</small>'; b.onclick=()=>{ closeRegionSelect(); returnFromField(); }; gr.append(b); }
   for (const r of FIELD_THEMES){
     const b=document.createElement('button'),u=regionUnlockInfo(r[0]); b.type='button'; b.dataset.theme=r[0]; b.innerHTML=regionBtnHtml(r);
     if(!u.open||(mode==='village'&&r[0]===fieldTheme)) b.disabled=true;
@@ -516,7 +516,7 @@ function defeatPlayer(){
   const lost=Math.floor(P.gold*.15); setGold(Math.max(0,P.gold-lost)); P.hp=P.maxHp; P.mp=P.maxMp; syncBars();
   for(const k in PLAYER_STATUS) PLAYER_STATUS[k]=0;P.shield=0;syncBars();
   say(lost?('쓰러졌습니다. 금화 '+lost+'닢을 잃었습니다.'):'쓰러졌습니다.');
-  travel('town',[23*TS,22.2*TS],'front');
+  travel(HOME_TOWN,MAPS[HOME_TOWN].spawn,'front');
 }
 function rawPlayerDamage(v,label){
   if(P.reviveGrace>0)return;

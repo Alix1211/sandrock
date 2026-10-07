@@ -8,6 +8,7 @@ const MAPS = {
   town: { name: '마을', map: A.map, ground: A.ground, mini: A.mini, blds: A.blds, props: A.props, npcs: A.npcs },
   out: { ...A.out },
   inn: { ...A.inn },
+  sand: { ...A.sand },   // 샌드락 새 마을(루시에라의 마을). 원래 큰 마을 'town'은 그대로 둔다.
 };
 let G = null, MINI = null, MAP = 'town', CUR = MAPS.town;
 for (const id in MAPS){ MAPS[id].G = load(MAPS[id].ground); MAPS[id].MINI = load(MAPS[id].mini); }
@@ -27,18 +28,22 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const solids = [], spots = [], sprites = [], trees = [], npcs = [], dummies = [], exits = [];
 let lamps = [];
 let townPortalReturn=null,portalArrivalUntil=0;
-let lastVisitedTown={map:'town'};
-const TOWN_PORTAL_X=36.0*TS,TOWN_PORTAL_Y=26.8*TS;
+let lastVisitedTown={map:'sand'};
+const HOME_TOWN='sand';   // 시작·탈출·포탈 기본 귀환 마을
+const SAND_PORTAL_X=32.0*TS,SAND_PORTAL_Y=23.6*TS;
+const TOWN_PORTAL_X=26.15*TS,TOWN_PORTAL_Y=19.15*TS;
 const VILLAGE_PORTAL_X=16*TS,VILLAGE_PORTAL_Y=17.5*TS;
-function portalAnchor(id=MAP){return id==='fieldvillage'?[VILLAGE_PORTAL_X,VILLAGE_PORTAL_Y]:[TOWN_PORTAL_X,TOWN_PORTAL_Y];}
+function portalAnchor(id=MAP){return id==='fieldvillage'?[VILLAGE_PORTAL_X,VILLAGE_PORTAL_Y]:id==='sand'?[SAND_PORTAL_X,SAND_PORTAL_Y]:[TOWN_PORTAL_X,TOWN_PORTAL_Y];}
+function isTownMap(id){return id==='town'||id==='sand'||id==='fieldvillage';}
 function normalizeTownHome(h){
   if(h&&h.map==='fieldvillage'&&h.theme)return {map:'fieldvillage',theme:h.theme,villageReturn:h.villageReturn?JSON.parse(JSON.stringify(h.villageReturn)):null};
-  return {map:'town'};
+  if(h&&h.map==='town')return {map:'town'};
+  return {map:HOME_TOWN};
 }
 function lastVisitedTownState(){return JSON.parse(JSON.stringify(lastVisitedTown));}
 function loadLastVisitedTown(h){lastVisitedTown=normalizeTownHome(h);return lastVisitedTownState();}
 function markTownArrival(id){
-  if(id==='town')lastVisitedTown={map:'town'};
+  if(id==='town'||id==='sand')lastVisitedTown={map:id};
   else if(id==='fieldvillage'&&window.__FD){
     const st=__FD.state();lastVisitedTown=normalizeTownHome({map:'fieldvillage',theme:st.theme||'spring',villageReturn:st.villageReturn||null});
   }else return false;
@@ -59,7 +64,7 @@ for (const b of CUR.blds){
     exits.push({ x0: b.x - b.w * 0.15, x1: b.x + b.w * 0.15, y0: b.y - b.h * 0.42 - 22, y1: b.y - b.h * 0.42 + 2, to: 'out' });
   } else solids.push({ x0: b.x - fw / 2, x1: b.x + fw / 2, y0: b.y - b.h * 0.36, y1: b.y - b.h * 0.1 });
   sprites.push({ img: BI[b.k], x: b.x, y: b.y, w: b.w, h: b.h, key: b.y - b.h * 0.1 });
-  if(id==='town'&&b.k==='inn')spots.push({name:'여관 입구',x:b.x+b.door*b.w,y:b.y-b.h*.06,r:48,kind:'inn_door'});
+  if(id==='town'&&b.k==='house_blue')spots.push({name:'여관 입구',x:b.x+b.door*b.w,y:b.y-b.h*.06,r:48,kind:'inn_door'});
   if (b.noSpot || b.k === 'watchtower' || hasNpc.has(b.k)) continue;
   spots.push({ name: b.name, x: b.x + b.door * b.w, y: gate ? b.y - b.h * 0.42 - 14 : b.y - b.h * 0.06, r: gate ? 60 : 46, kind: b.kind || (gate ? 'gate' : 'bld'), market: b.market || CUR.market || null });
 }
@@ -68,7 +73,7 @@ for (const p of CUR.props){
     solids.push({ x0: p.x - p.w * 0.5, x1: p.x - p.w * 0.1, y0: p.y - p.h * 0.45, y1: p.y - 4 }, { x0: p.x + p.w * 0.1, x1: p.x + p.w * 0.5, y0: p.y - p.h * 0.45, y1: p.y - 4 }, { x0: p.x - p.w * 0.1, x1: p.x + p.w * 0.1, y0: p.y - p.h * 0.45, y1: p.y - p.h * 0.12 });
     sprites.push({ img: BI[p.k], x: p.x, y: p.y, w: p.w, h: p.h, key: p.y - 6 });
     spots.push({ name: p.name, x: p.x, y: p.y - p.h * 0.08, r: 56, kind: 'exit' });
-    exits.push({ x0: p.x - p.w * 0.1, x1: p.x + p.w * 0.1, y0: p.y - p.h * 0.12 - 2, y1: p.y - p.h * 0.12 + 20, to: 'town' });
+    exits.push({ x0: p.x - p.w * 0.1, x1: p.x + p.w * 0.1, y0: p.y - p.h * 0.12 - 2, y1: p.y - p.h * 0.12 + 20, to: HOME_TOWN });
     continue;
   }
   if (p.cw > 0) solids.push({ x0: p.x - p.w * p.cw / 2, x1: p.x + p.w * p.cw / 2, y0: p.y - p.cd, y1: p.y - 2 });
@@ -87,7 +92,7 @@ for (const n of npcs){
   sprites.push(n);
   spots.push({ name: n.name, x: n.x, y: n.y + 6, r: 50, kind: 'npc', npc: n });
 }
-  if((id==='town'||id==='fieldvillage')&&townPortalReturn){
+  if(isTownMap(id)&&townPortalReturn){
     const [px,py]=portalAnchor(id);
     sprites.push({portal:true,x:px,y:py,w:112,h:98,key:py-2});
     spots.push({name:'귀환 포탈',x:px,y:py,r:58,kind:'town_portal'});
@@ -101,12 +106,12 @@ for (const n of npcs){
   if (window.__FD_READY && typeof afterDynamicBuild === 'function') afterDynamicBuild(id);
   if(window.QUEST)QUEST.onWorld();
 }
-buildWorld('town');
+buildWorld(HOME_TOWN);
 
 // ======================= 플레이어 =======================
 // 수치 규모: 체력·마나·공격·방어·경험치 같은 정수 수치는 '기준 단위 × NUM'으로 다룬다(세분화된 수치 변화용). 스킬표(SK)·몬스터 기준값 등은 기준 단위로 적고 쓰는 곳에서 곱한다.
 const NUM = 100;
-const P = { name:'루시에라', x:58.5*TS, y:46.0*TS, r:11, dir:'back', flip:false, moving:false, t:0, gold:300,
+const P = { name:'루시에라', x:A.sand.spawn[0], y:A.sand.spawn[1], r:11, dir:'back', flip:false, moving:false, t:0, gold:300,
   hp:40*NUM, mp:28*NUM, maxHp:40*NUM, maxMp:28*NUM, lv:1, exp:0, statPts:0, skillPts:0, lifePts:0,
   stats:{str:5,vit:5,int:5,mag:6,dex:8,luck:3},
   mastery:{sword:{lv:0,xp:0},spear:{lv:0,xp:0},gauntlet:{lv:0,xp:0},bow:{lv:0,xp:0},staff:{lv:0,xp:0}},
@@ -236,10 +241,10 @@ function portalTransition(id,pos,dir,onArrive,prepare){
   setTimeout(async()=>{
     let dest=id,p=pos;
     try{if(prepare)await prepare();}
-    catch(e){dest='town';p=[23*TS,22.2*TS];lastVisitedTown={map:'town'};}
+    catch(e){dest=HOME_TOWN;p=MAPS[HOME_TOWN].spawn;lastVisitedTown={map:HOME_TOWN};}
     buildWorld(dest);p=typeof p==='function'?p():p;P.x=p[0];P.y=p[1];P.dir=dir||'front';P.atk=null;
     const safe=nearestSafePosition(P.x,P.y);P.x=safe[0];P.y=safe[1];
-    if(dest==='town'||dest==='fieldvillage')markTownArrival(dest);
+    if(isTownMap(dest))markTownArrival(dest);
     if(window.TELEMETRY)TELEMETRY.enter(locationState());
     if(onArrive)onArrive();
     setTimeout(()=>{
@@ -252,7 +257,7 @@ function portalTransition(id,pos,dir,onArrive,prepare){
 let portalScrollConfirm=0;
 function useTownPortal(){
   const r=lifeRank('townPortal'),sc=window.UI&&UI.scrolls?UI.scrolls().portal:0;
-  if(MAP==='town'||MAP==='inn'||MAP==='fieldvillage'){say('이미 마을에 있습니다.');return false;}
+  if(isTownMap(MAP)||MAP==='inn'){say('이미 마을에 있습니다.');return false;}
   const now=Date.now(),cd=[0,15,8,3][r||0]*60000;
   let byScroll=false;
   if(!r||(P.portalReadyAt||0)>now){
@@ -269,14 +274,14 @@ function useTownPortal(){
   else P.portalReadyAt=now+cd;
   const home=normalizeTownHome(lastVisitedTown);
   const prep=home.map==='fieldvillage'&&window.__FD&&__FD.prepareVillage?()=>__FD.prepareVillage(home.theme,home.villageReturn||null):null;
-  const pos=home.map==='fieldvillage'?()=>MAPS.fieldvillage.spawn:[23*TS,22.2*TS];
-  const dest=home.map==='fieldvillage'&&prep?'fieldvillage':'town';
+  const pos=home.map==='fieldvillage'?()=>MAPS.fieldvillage.spawn:home.map==='town'?[23*TS,22.2*TS]:MAPS[HOME_TOWN].spawn;
+  const dest=home.map==='fieldvillage'&&prep?'fieldvillage':home.map==='town'?'town':HOME_TOWN;
   const ok=portalTransition(dest,pos,'front',()=>{portalArrivalUntil=performance.now()+1700;},prep);
   if(ok&&window.TELEMETRY)TELEMETRY.portal(home);
   if(window.UI&&UI.save)UI.save();return ok;
 }
 function returnTownPortal(){
-  if((MAP!=='town'&&MAP!=='fieldvillage')||!townPortalReturn)return false;
+  if(!isTownMap(MAP)||!townPortalReturn)return false;
   const q=townPortalReturn;
   if(q.map==='dungeon'&&q.dungeon&&window.__DUN&&__DUN.preparePortalRestore)__DUN.preparePortalRestore(q.dungeon);
   window.__PORTAL_RUNTIME_RESTORE=true;
@@ -403,10 +408,6 @@ fsBtn.addEventListener('click', async () => {
     }
   } catch (e) {}
   syncFullscreenButton();
-});
-document.addEventListener('fullscreenchange', syncFullscreenButton);
-document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
-syncFullscreenButton();
 
 // ======================= 창 =======================
 let near = null, panel = null, talking = null;
@@ -430,7 +431,7 @@ function act(){
   if(near.kind==='npc')return near.npc.shop==='inn'&&MAP==='inn'&&typeof openInnDlg==='function'?openInnDlg(near.npc):openDlg(near.npc);
   if (near.name === '의뢰 게시판' && window.GUILD) return GUILD.open();
   if (near.kind === 'gate') return travel('out', MAPS.out.spawn, 'front');
-  if (near.kind === 'exit') return travel('town', MAPS.out.back, 'back');
+  if (near.kind === 'exit') return travel(HOME_TOWN, MAPS[HOME_TOWN].spawn, 'back');   // 성 밖 → 새 마을(원래 마을 길은 나중에 연다)
   if (near.kind === 'field_exit') return returnFromField();
   if (near.kind === 'field_village' && window.__FD) return __FD.enterVillage(near.market || (CUR && CUR.market) || 'spring');
   if (near.kind === 'trade' && window.TRADE) return TRADE.open(near.market || (CUR && CUR.market) || 'town');
@@ -454,7 +455,7 @@ function travel(id,pos,dir){
   setTimeout(()=>{
     buildWorld(id);P.x=pos[0];P.y=pos[1];P.dir=dir||'front';P.atk=null;
     const safe=nearestSafePosition(P.x,P.y);P.x=safe[0];P.y=safe[1];
-    if(id==='town'||id==='fieldvillage')markTownArrival(id);
+    if(isTownMap(id))markTownArrival(id);
     if(window.TELEMETRY)TELEMETRY.enter(locationState());
     setTimeout(()=>{f.classList.remove('on');traveling=false;},120);
   },320);
@@ -482,16 +483,16 @@ async function resumeLocation(st){
     }else if(map==='out'){
       buildWorld('out');
     }else{
-      buildWorld('town');
+      buildWorld(MAPS[map]&&(map==='town'||map==='sand')?map:HOME_TOWN);
     }
     P.x=Number.isFinite(st.x)?st.x:P.x;P.y=Number.isFinite(st.y)?st.y:P.y;P.dir=dir;P.atk=null;
     const safe=nearestSafePosition(P.x,P.y);P.x=safe[0];P.y=safe[1];
-    if(map==='town'||map==='fieldvillage')markTownArrival(map);
+    if(isTownMap(map))markTownArrival(map);
     if(map==='dungeon'&&window.GUILD&&window.__DUN)GUILD.onDungeonFloor(__DUN.state().floor||1);
     if(window.TELEMETRY)TELEMETRY.enter(locationState());
     return true;
   }catch(e){
-    buildWorld('town');P.x=58.5*TS;P.y=46.0*TS;P.dir='front';return false;
+    buildWorld(HOME_TOWN);P.x=MAPS[HOME_TOWN].spawn[0];P.y=MAPS[HOME_TOWN].spawn[1];P.dir='front';return false;
   }
 }
 
@@ -500,7 +501,7 @@ function emergencyEscape(){
   traveling=false;closeAll();
   if(typeof PLAYER_STATUS!=='undefined')for(const k in PLAYER_STATUS)PLAYER_STATUS[k]=0;
   P.atk=null;P.moving=false;zones.length=0;P.castRoot=0;
-  buildWorld('town');P.x=58.5*TS;P.y=46.0*TS;P.dir='front';
+  buildWorld(HOME_TOWN);P.x=MAPS[HOME_TOWN].spawn[0];P.y=MAPS[HOME_TOWN].spawn[1];P.dir='front';
   const safe=nearestSafePosition(P.x,P.y);P.x=safe[0];P.y=safe[1];
   const fade=$('fade');if(fade)fade.classList.remove('on');
   say('끼임 탈출: 큰 마을로 복귀했습니다.');
@@ -575,7 +576,7 @@ const SHOP_BUY_RATE = {
   general: { weapon:0.60, armor:0.60, accessory:0.60, material:0.90, potion:1.00, junk:0.90 },
 };
 // 작은 마을이 붙으면 CUR.market 또는 NPC.market에 아래 키만 넣으면 같은 판매식이 바로 적용된다.
-// 일부 품목은 ±20~35% 차이. 먼 마을까지 오가며 시세차익을 노리는 루시에라의 생활 동기.
+// 일부 품목은 ±20~35% 차이. 먼 마을까지 오가며 시세차익을 노리는 주인공의 생활 동기.
 const REGION_MARKET = {
   town:    { weapon:1.00, armor:1.00, accessory:1.00, material:1.00, potion:1.00, junk:1.00 },
   spring:  { weapon:0.90, armor:0.95, accessory:1.20, material:1.10, potion:0.90, junk:1.05 },
@@ -720,11 +721,9 @@ $('sellAll').addEventListener('click',()=>{const rows=UI.bagItems().filter(r=>!r
 window.__SHOP={goods:k=>shopGoods(k),tier:()=>levelTier(P.lv),open:openShop,mode:setShopMode,price:sellPrice,buyPrice,baseValue:baseSellValue,rate:sellRate,sellAt,buyAt,clearSelection(){saleConfirm=null;clearShopInfo('물건을 선택해 주세요.');},selectBag(i){const row=UI.bagItems().find(x=>x.i===i);if(row){saleConfirm=null;pickSell(i,row.it,null);}},state:()=>({mode:shopMode,gold:P.gold})};
 
 // ======================= 행인 =======================
-const WP = [
-  [28,22],[36,22],[44,22],[24,25.5],[48,25.5],[20,29],[28,29],[44,29],[52,29],
-  [15,14.5],[24,14.5],[36,15.5],[48,14.5],[58,15],[10,25],[10,34],[17,34],[25,42],
-  [36,42],[48,41],[56,39],[61,42],[40,46],[32,46],[39,27],[33,27]
-].map(([x, y]) => ({ x: x * TS, y: y * TS }));
+const WP = [[14.5,14],[18,13.6],[28,13.6],[31.5,14],[14.5,19.9],[20,20.7],[26,20.7],[31.5,19.9],[23,13.9],[19.6,16.4],[26.4,16.4],
+  [23,23],[23,27],[22.6,30.2],[10,16.5],[5,16.5],[8,12.2],[36,16.5],[41,16.5],[38,12.4],[11,27.1],[16,27.1],[30.5,27.1],[36,26.9],[41.5,26.4],[15.3,11.3],[31.4,11.3]]
+  .map(([x, y]) => ({ x: x * TS, y: y * TS }));
 const VI = {};
 const vils = A.vils.map((v, i) => {
   VI[v.name] = {}; for (const d in v.fr) VI[v.name][d] = v.fr[d].map(load);

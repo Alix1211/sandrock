@@ -5,7 +5,7 @@ const BGM = (() => {
   const fading=new Set(),ramps=new WeakMap();
   function target(){
     if(eventOverride||(window.QUEST&&QUEST.isDialog()))return 'event';
-    if(MAP!=='dungeon'&&MAP!=='field'){activeBoss=null;return MAP==='town'||MAP==='inn'?'town':'field';}
+    if(MAP!=='dungeon'&&MAP!=='field'){activeBoss=null;return MAP==='town'||MAP==='sand'||MAP==='inn'?'town':'field';}
     if(activeBoss&&(!monsters.includes(activeBoss)||activeBoss.dead))activeBoss=null;
     if(!activeBoss)activeBoss=monsters.find(m=>m.boss&&!m.dead&&(m.state==='chase'||Math.hypot(m.x-P.x,m.y-P.y)<360))||null;
     return activeBoss?'boss':MAP;
