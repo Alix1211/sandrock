@@ -128,7 +128,7 @@ def bake_shadows(base, items):
     k = PX / TS
     sh = Image.new('L', base.size, 0)
     for it in items:
-        im = Image.open(it['path']).convert('RGBA')
+        im = it['image'].copy() if it.get('image') is not None else Image.open(it['path']).convert('RGBA')
         w = max(1, round(it['w'] * k)); h = max(1, round(it['h'] * k))
         a = im.resize((w, h), Image.LANCZOS).split()[3].point(lambda v: 255 if v > 90 else 0)
         sq = it.get('sq', 0.42); hh = max(1, round(h * sq))
@@ -180,17 +180,35 @@ B = [
  ('gate_twin_tower', 'gate_twin_tower','정문 (성 밖으로)',36.0, 50.0, 7.0, 0.00),
 ]
 SCALE = 1.5
+def atlas_cell(atlas, idx):
+    # 5x5 atlas, idx is 1-based. Transparent padding is trimmed after crop.
+    cw, ch = atlas.width // 5, atlas.height // 5
+    i = idx - 1
+    cut = atlas.crop(((i % 5) * cw, (i // 5) * ch, (i % 5 + 1) * cw, (i // 5 + 1) * ch))
+    box = cut.getbbox()
+    return cut.crop(box) if box else cut
+
+# 케인이 이 대화에 올린 최종 23종 건물. 원본 업로드 순서를 실제 역할에 맞춰 연결.
+_TOWN_BUILD_ATLAS = Image.open(R + 'sandrock/town_buildings.webp').convert('RGBA')
+_BUILDING_CELL = {
+    'general_store':3, 'workshop':2, 'carpentry':1, 'research_center':7, 'city_hall':6,
+    'recycling':5, 'material_shop':4, 'blacksmith':8, 'clothing':10, 'mine_office':9,
+    'guild_hall':14, 'post_office':13, 'inn':12, 'restaurant':11, 'pharmacy':17,
+    'warehouse':16, 'trading_post':15, 'residence':21, 'ruin_office':20,
+    'community_hall':19, 'mansion':18, 'abandoned':23, 'guard_hq':22,
+}
 imgs = {}
-for _, art, _, _, _, _, _ in B:
-    if art in imgs: continue
-    imgs[art] = Image.open(R + f'buildings/{art}.png').convert('RGBA')
+for k, art, _, _, _, _, _ in B:
+    if k in _BUILDING_CELL:
+        imgs[k] = atlas_cell(_TOWN_BUILD_ATLAS, _BUILDING_CELL[k])
+    else:
+        imgs[k] = Image.open(R + f'buildings/{art}.png').convert('RGBA')
 blds = []
 assets = {}
 for k, art, name, cx, by, wt, dxr in B:
-    im = imgs[art]
+    im = imgs[k]
     w = wt * TS; h = w * im.height / im.width
-    if k not in assets:
-        assets[k] = enc(im.resize((round(w * SCALE), round(h * SCALE)), Image.LANCZOS))
+    assets[k] = enc(im.resize((round(w * SCALE), round(h * SCALE)), Image.LANCZOS))
     blds.append(dict(k=k, art=art, name=name, x=cx * TS, y=by * TS, w=w, h=h, door=dxr))
 
 # 소품 (건물 부품 중 바닥에 세울 수 있는 것만)
@@ -319,20 +337,20 @@ for k in ['03', '04', '05', '06', '14', '15']:
 # ---- 사람 (시나리오 장부 번호 = 초상화 번호) ----
 # 번호, 이름, 직함, 건물 key(문 옆에 섬) 또는 None, x, y(칸, 건물 없을 때), 왼쪽(-1)/오른쪽(1), 첫마디, 가게 종류
 NPC = [
- (1,  '마르코','잡화점 주인',      'general_store',   1,'오늘은 물건보다 사람이 먼저 들어오네요. 천천히 둘러보세요.','general'),
+ (1,  '마라',  '잡화점 주인',      'general_store',   1,'오늘은 물건보다 사람이 먼저 들어오네요. 천천히 둘러보세요.','general'),
  (2,  '레오',  '공방 관리인',      'workshop',       -1,'아침부터 톱밥이 날리더니 이제야 좀 조용해졌네요.',None),
  (3,  '하겐',  '목공소 주인',      'carpentry',       1,'나무는 결을 거슬러 자르면 꼭 티를 냅니다. 사람도 비슷하고요.',None),
- (4,  '에드먼','연구원',           'research_center',-1,'잠깐만요. 방금 떠오른 걸 적고 있었는데… 네, 이제 말씀하시죠.',None),
+ (4,  '에드나','연구원',           'research_center',-1,'잠깐만요. 방금 떠오른 걸 적고 있었는데… 네, 이제 말씀하시죠.',None),
  (5,  '오토',  '시청 담당관',      'city_hall',       1,'광장 쪽 공사가 끝나니 민원이 절반은 줄었군요. 나머지 절반은 사람 문제고요.',None),
  (6,  '리코',  '재활용소 주인',    'recycling',      -1,'버리는 것과 쓸모없는 건 다른 말입니다. 여기선 특히 그래요.',None),
  (7,  '미라',  '재료상',           'material_shop',   1,'재료는 눈으로만 보면 다 비슷해요. 손에 올려보면 바로 다르죠.','general'),
- (8,  '그레타','대장장이',         'blacksmith',     -1,'불 가까이 오지 마요. 말은 들리니까 거기서 해도 됩니다.','arms'),
+ (8,  '그렌',  '대장장이',         'blacksmith',     -1,'불 가까이 오지 마요. 말은 들리니까 거기서 해도 됩니다.','arms'),
  (9,  '루나',  '의류점 주인',      'clothing',        1,'옷은 멀쩡해 보여도 실밥 하나가 하루 종일 신경 쓰일 때가 있죠.',None),
  (10, '도란',  '광산 관리인',      'mine_office',    -1,'오늘 갱도 보고서는 아직 덜 왔습니다. 늘 그렇죠.',None),
  (11, '하르트','길드장',           'guild_hall',      1,'게시판은 새로 정리했습니다. 누가 순서를 또 바꾸지만 않으면요.','guild'),
  (12, '리아',  '우체국 직원',      'post_office',    -1,'편지는 쌓이는데 사람은 늘 급하네요. 그래도 잃어버리진 않습니다.',None),
  (13, '토비',  '여관 주인',        'inn',             1,'방은 비어 있어요. 불도 지펴놨고요. 들어가실 거면 말씀하세요.','inn'),
- (14, '브란',  '식당 주인',        'restaurant',     -1,'냄비는 끓고 있고 자리는 남았습니다. 둘 중 하나는 금방 없어지겠죠.',None),
+ (14, '브리나','식당 주인',        'restaurant',     -1,'냄비는 끓고 있고 자리는 남았습니다. 둘 중 하나는 금방 없어지겠죠.',None),
  (15, '세라',  '약사',             'pharmacy',        1,'약초 냄새가 좀 세죠? 익숙해지면 오히려 밖이 밋밋합니다.','general'),
  (16, '모건',  '창고지기',         'warehouse',      -1,'들어온 상자보다 나간 상자가 적군요. 오늘도 정리할 게 많겠습니다.',None),
  (17, '핀',    '교역소 직원',      'trading_post',    1,'시세판은 아침에 갈았습니다. 오후엔 또 달라질지도 모르지만요.','trade'),
@@ -340,16 +358,18 @@ NPC = [
  (19, '베른',  '유적 관리인',      'ruin_office',     1,'유적에서 가져온 건 먼저 기록부터 합니다. 손대는 건 그다음이고요.',None),
  (20, '엘다',  '마을회관 관리인',  'community_hall', -1,'회의가 끝나면 의자가 꼭 하나씩 엉뚱한 데 가 있습니다.',None),
  (21, '페닉스','저택 관리인',      'mansion',         1,'주인께선 안에 계십니다. 만나실 수 있다는 뜻은 아니지만요.',None),
- (22, '고르던','폐건물 관리인',    'abandoned',      -1,'폐건물이라고 아무나 들어가도 되는 건 아닙니다. 바닥이 먼저 항의할 겁니다.',None),
+ (22, '네라',  '폐건물 관리인',    'abandoned',      -1,'폐건물이라고 아무나 들어가도 되는 건 아닙니다. 바닥이 먼저 항의할 겁니다.',None),
  (23, '라이너','경비병',           'guard_hq',        1,'순찰 교대까지 조금 남았습니다. 정문 쪽은 이상 없습니다.',None),
  (24, '에다',  '경비병',           'guard_hq',       -1,'라이너는 기록부터 보고, 나는 사람 얼굴부터 봐요. 둘 다 필요하죠.',None),
 ]
 bpos = {b['k']: b for b in blds}
 PORT = {}
 npcs = []
+# 케인이 올린 24명 NPC 시트. 역할에 맞게 재배열한 atlas의 cell 번호.
+_TOWN_NPC_ATLAS = Image.open(R + 'sandrock/town_npcs.webp').convert('RGBA')
+_NPC_CELL = [21,1,3,15,5,6,7,2,9,10,11,12,14,22,8,16,17,18,4,20,13,19,23,24]
 for no, name, title, where, side, line, shop in NPC:
-    hd = R + f'npc_hd/npc_{no:02d}.png'
-    im = Image.open(hd if os.path.exists(hd) else R + f'npc/npc_{no:02d}.png').convert('RGBA')
+    im = atlas_cell(_TOWN_NPC_ATLAS, _NPC_CELL[no - 1])
     pt = im.copy(); pt.thumbnail((520, 560), Image.LANCZOS); PORT[f'npc_{no:02d}'] = enc(pt, 88)
     h = 100; w = h * im.width / im.height
     key = f'npc_{no:02d}'
@@ -457,7 +477,7 @@ for kind,row in [('ring',0),('neck',1)]:
     ICON[kind]=ICON[f'acc_{row}_01']
 
 
-SH = [dict(path=R + f"buildings/{b['art']}.png", x=b['x'], y=b['y'], w=b['w'], h=b['h'], sq=0.5 if b['k'] == 'gate_twin_tower' else 0.42) for b in blds]
+SH = [dict(image=imgs[b['k']], x=b['x'], y=b['y'], w=b['w'], h=b['h'], sq=0.5 if b['k'] == 'gate_twin_tower' else 0.42) for b in blds]
 SH += [dict(path=R + p['path'] + '.png', x=p['x'], y=p['y'], w=p['w'], h=p['h'], sq=0.55 if p['tree'] else 0.5, foot=0.03) for p in props]
 ground = bake_shadows(ground, SH)
 mini = ground.resize((MW * 6, MH * 6), Image.LANCZOS)
