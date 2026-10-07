@@ -553,12 +553,16 @@ import sandrock_names as SN
 SAND_LABEL = dict(SN.BUILDINGS)
 sg = sandmap.gen_ground(R, PX, 21, os.path.join(HERE, '.ground_sand_v1.png'))
 sblds, sprops, snpcs, sshadow = [], [], [], []
-for key, cx, by, wt, door in sandmap.BLDS:
-    path = R + f'sandrock/buildings/{key}.png'
+SAND_LABEL.update({k: '주민 집' for k, _ in SN.HOUSES})
+for key, cx, by, wt, flip in sandmap.BLDS:
+    folder = 'houses' if key.startswith('house_') else 'buildings'
+    path = R + f'sandrock/{folder}/{key}.png'
     im = Image.open(path).convert('RGBA')
-    w = wt * TS; h = w * im.height / im.width; k = 's_' + key
+    if flip: im = im.transpose(Image.FLIP_LEFT_RIGHT)
+    w = wt * TS; h = w * im.height / im.width; k = 's_' + key + ('_f' if flip else '')
     assets[k] = enc(im.resize((round(w * SCALE), round(h * SCALE)), Image.LANCZOS))
-    sblds.append(dict(k=k, name=SAND_LABEL[key], x=cx * TS, y=by * TS, w=w, h=h, door=door))
+    # 주민 집은 들어갈 수 없음 → 살펴보기 표시 없음(noSpot)
+    sblds.append(dict(k=k, name=SAND_LABEL[key], x=cx * TS, y=by * TS, w=w, h=h, door=0, noSpot=key.startswith('house_')))
     sshadow.append(dict(path=path, x=cx * TS, y=by * TS, w=w, h=h, sq=0.42))
 _gx, _gy, _gw = sandmap.GATE
 _gim = Image.open(R + 'buildings/gate_twin_tower.png').convert('RGBA')
@@ -571,10 +575,16 @@ for path, name, cx, by, wt, col in sandmap.PROPS:
     if key not in assets: assets[key] = enc(im.resize((round(w * SCALE), round(h * SCALE)), Image.LANCZOS))
     sprops.append(dict(kind=None, k=key, path=path, name=name, x=cx * TS, y=by * TS, w=w, h=h, cw=col[0], cd=col[1] * TS, tree=key.startswith('tree')))
     sshadow.append(dict(path=R + path + '.png', x=cx * TS, y=by * TS, w=w, h=h, sq=0.55 if key.startswith('tree') else 0.5, foot=0.03))
+for i, (tx, ty) in enumerate(sandmap.TREES):
+    key = ['tree_big', 'tree_small', 'tree_blossom'][i % 3]; wt = [4.0, 3.0, 3.2][i % 3]
+    im = Image.open(R + TP + key + '.png').convert('RGBA'); w = wt * TS; h = w * im.height / im.width
+    if key not in assets: assets[key] = enc(im.resize((round(w * SCALE), round(h * SCALE)), Image.LANCZOS))
+    sprops.append(dict(kind=None, k=key, path=TP + key, name=None, x=tx * TS, y=ty * TS, w=w, h=h, cw=0, cd=0, tree=True))
 _sb = {b[0]: b for b in sandmap.BLDS}
 for key, label in SN.NPCS:
     bk = 'guard_hq' if key.startswith('guard_') else key
-    _, cx, by, wt, door = _sb[bk]
+    if bk not in _sb: continue   # 공방(workshop)은 마을 밖 앞마당으로 이동 → 앞마당 만들 때 배치
+    _, cx, by, wt, _f = _sb[bk]
     side = -1 if key == 'guard_m' else 1
     im = Image.open(R + f'sandrock/npcs/{key}.png').convert('RGBA')
     h = 100; w = h * im.width / im.height; k = 'sn_' + key
@@ -586,7 +596,8 @@ for key, label in SN.NPCS:
 sg = bake_shadows(sg, sshadow)
 SAND = dict(map=dict(w=sandmap.SAND_W, h=sandmap.SAND_H, ts=TS, px=PX), ground=enc(sg, 80),
             mini=enc(sg.resize((sandmap.SAND_W * 6, sandmap.SAND_H * 6), Image.LANCZOS), 80),
-            blds=sblds, props=sprops, npcs=snpcs, name='새 마을', solids=sandmap.pond_solids(TS) + sandmap.edge_solids(TS),
+            blds=sblds, props=sprops, npcs=snpcs, name='새 마을', solids=sandmap.edge_solids(TS), wp=[[x * TS, y * TS] for x, y in sandmap.WP],
+            vilHome=['s_residence', 's_inn', 's_community_hall', 's_restaurant', 's_general_store'], portal=[sandmap.FOUNTAIN_PORTAL[0] * TS, sandmap.FOUNTAIN_PORTAL[1] * TS],
             spawn=[sandmap.SPAWN[0] * TS, sandmap.SPAWN[1] * TS])
 
 # ---- 던전 타일·소품: 두 가지 모습 (ruins=성 밖 입구의 석조 던전, cave=필드 동굴 입구의 자연 동굴) ----

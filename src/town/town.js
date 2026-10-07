@@ -30,7 +30,7 @@ let lamps = [];
 let townPortalReturn=null,portalArrivalUntil=0;
 let lastVisitedTown={map:'sand'};
 const HOME_TOWN='sand';   // 시작·탈출·포탈 기본 귀환 마을
-const SAND_PORTAL_X=32.0*TS,SAND_PORTAL_Y=23.6*TS;
+const SAND_PORTAL_X=A.sand.portal[0],SAND_PORTAL_Y=A.sand.portal[1];
 const TOWN_PORTAL_X=26.15*TS,TOWN_PORTAL_Y=19.15*TS;
 const VILLAGE_PORTAL_X=16*TS,VILLAGE_PORTAL_Y=17.5*TS;
 function portalAnchor(id=MAP){return id==='fieldvillage'?[VILLAGE_PORTAL_X,VILLAGE_PORTAL_Y]:id==='sand'?[SAND_PORTAL_X,SAND_PORTAL_Y]:[TOWN_PORTAL_X,TOWN_PORTAL_Y];}
@@ -408,6 +408,10 @@ fsBtn.addEventListener('click', async () => {
     }
   } catch (e) {}
   syncFullscreenButton();
+});
+document.addEventListener('fullscreenchange', syncFullscreenButton);
+document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
+syncFullscreenButton();
 
 // ======================= 창 =======================
 let near = null, panel = null, talking = null;
@@ -735,6 +739,11 @@ const vils = A.vils.map((v, i) => {
 });
 const FVP=[[7,14],[10,17],[16,16],[22,17],[25,14],[12,9],[20,9],[16,19]].map(([x,y])=>({x:x*TS,y:y*TS}));
 const fvils=vils.slice(0,4).map((v,i)=>({...v,x:FVP[i].x,y:FVP[i].y,tx:FVP[i].x,ty:FVP[i].y,wait:rand(.5,2.5),hidden:false,goingHome:false,stuck:0}));
+// 새 마을 행인: 같은 5명, 새 마을 길 지점(A.sand.wp)과 집
+const SWP=A.sand.wp.map(([x,y])=>({x,y}));
+const svils=vils.map((v,i)=>{const hb=A.sand.blds.find(b=>b.k===A.sand.vilHome[i])||A.sand.blds[0];const st=SWP[(i*4)%SWP.length];
+  return {...v,x:st.x,y:st.y,tx:st.x,ty:st.y,home:{x:hb.x+(i%2?22:-22),y:hb.y+12},wait:rand(0,3),hidden:false,goingHome:false,stuck:0};});
+function mapVils(){return MAP==='town'?vils:MAP==='sand'?svils:null;}
 function resetFieldVils(){
   for(let i=0;i<fvils.length;i++){const p=FVP[i%FVP.length],v=fvils[i];v.x=p.x;v.y=p.y;v.tx=p.x;v.ty=p.y;v.wait=rand(.4,2.2);v.hidden=false;v.goingHome=false;v.stuck=0;}
 }
@@ -759,8 +768,9 @@ function vBlocked(x, y){
   }
   return Math.hypot(x - P.x, y - P.y) < 22;
 }
-function updVils(dt, night){
-  for (const v of vils){
+function updVils(dt, night, list=vils, WP0=WP){
+  const WP=WP0;
+  for (const v of list){
     if (v.hidden){ // 아침이 되면 집에서 나옴
       if (!night && Math.random() < dt * 0.3){ v.hidden = false; v.x = v.home.x; v.y = v.home.y; v.wait = 0.5; }
       continue;
@@ -983,7 +993,7 @@ function drawMini(camX, camY){
   for (const b of CUR.blds){ const fw = b.w * 0.8; mx.fillRect((b.x - fw / 2) * sx, (b.y - b.h * 0.42) * sy, fw * sx, b.h * 0.34 * sy); }
   mx.fillStyle = '#ffe08a';
   for (const n of npcs){ mx.beginPath(); mx.arc(n.x * sx, n.y * sy, 2.5, 0, 7); mx.fill(); }
-  mx.fillStyle = '#e8f2ff'; if (MAP === 'town') for (const v of vils) if (!v.hidden){ mx.beginPath(); mx.arc(v.x * sx, v.y * sy, 2, 0, 7); mx.fill(); }
+  mx.fillStyle = '#e8f2ff'; const _mv=mapVils(); if (_mv) for (const v of _mv) if (!v.hidden){ mx.beginPath(); mx.arc(v.x * sx, v.y * sy, 2, 0, 7); mx.fill(); }
   else if(MAP==='fieldvillage')for(const v of fvils){mx.beginPath();mx.arc(v.x*sx,v.y*sy,2,0,7);mx.fill();}
   if(window.QUEST&&QUEST.minimapTargets){
     const pulse=.5+.5*Math.sin(T*6.2),r=3.8+pulse*2.8;
@@ -1061,7 +1071,7 @@ function frame(now){
     updAtk(dt);updSkills(dt);if(typeof updEncounters==='function')updEncounters(dt);
     if(typeof updateCompanion==='function')updateCompanion(sdt);
     if(window.COMPANION&&COMPANION.ensureTownTests)COMPANION.ensureTownTests();
-    if(MAP==='town')updVils(dt,dayLook(DAY.t).lamp>0.6);
+    if(MAP==='town')updVils(dt,dayLook(DAY.t).lamp>0.6);else if(MAP==='sand')updVils(dt,dayLook(DAY.t).lamp>0.6,svils,SWP);
     else if(MAP==='fieldvillage')updFieldVils(dt);
   }
 
@@ -1075,7 +1085,7 @@ function frame(now){
 
   const list = sprites.filter(s => s.x + s.w / 2 > camX && s.x - s.w / 2 < camX + vw && s.y > camY && s.y - s.h < camY + vh);
   list.push({ me: true, key: P.y });
-  if (MAP === 'town') for (const v of vils) if (!v.hidden) list.push({ vil: v, key: v.y });
+  if (mapVils()) for (const v of mapVils()) if (!v.hidden) list.push({ vil: v, key: v.y });
   else if (MAP === 'fieldvillage') for (const v of fvils) list.push({vil:v,key:v.y});
   if (typeof appendEncounterSprites === 'function') appendEncounterSprites(list);
   if (typeof appendCompanionSprite === 'function') appendCompanionSprite(list);

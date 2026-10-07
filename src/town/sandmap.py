@@ -1,120 +1,139 @@
-# 샌드락 새 마을 (루시에라의 마을) — build.py에서 불러 씀
-# 원래 큰 마을(map 'town')은 그대로 두고, 이 마을은 별도 맵 'sand'로 들어간다(케인 확정 2026-10-07: 두 세계를 섞되 아무것도 버리지 않음).
-# 건물·NPC 그림: assets/sandrock (tools/sandrock_slice.py 결과). 배치 뼈대는 GPT가 잡은 23채 자리를 이어받음.
+# 샌드락 새 마을 (루시에라의 마을, 맵 'sand') — build.py에서 불러 씀
+# 원래 큰 마을('town')과 섞지 않는 독립 파일(나중에 GQS로 옮겨 붙이기 쉽게).
+# 구조(케인 확정 2026-10-07, docs/sand_town_plan_v1.png):
+#   남쪽 정문 → 입구 광장(가게) → 큰길 → 중앙 분수 광장(시청) / 서쪽 생산 구역 / 동쪽 주거 구역
+#   길만 걸을 수 있고, 길 북쪽 건물 터는 밝은 풀, 나머지는 못 가는 곳(필드식 어둠 + 15px 페더).
+#   건물 그림은 모두 정면(남쪽)이 문이므로 반드시 길의 북쪽 면에 세운다(바닥선 = 길 윗변).
 import os, random, numpy as np
 from PIL import Image
 from scipy import ndimage as nd
 
-SAND_W, SAND_H = 72, 50
+SAND_W, SAND_H = 64, 52
 
-# 길·광장 (칸 좌표 사각형)
-PLAZA = (25.0, 17.0, 47.0, 27.8)
-COBBLE = [
-    PLAZA,
-    (34.0, 8.5, 38.5, 30.0),      # 시청-광장 세로축
-    (10.0, 19.0, 63.5, 23.7),     # 상업 메인거리
-    (14.0, 27.0, 58.5, 30.6),     # 남쪽 상업거리
-    (36.8, 27.0, 41.2, 50.5),     # 연못 오른쪽-정문 큰길
-    (48.0, 34.0, 64.0, 37.0),     # 주거/작업장 연결
+# ---- 길(칸 사각형 x0, y0, x1, y1) ----
+ROADS = [
+    (13.5, 34.6, 50.5, 42.0),   # 입구 광장
+    (29.5, 41.5, 34.5, 52.0),   # 정문 길
+    (29.5, 21.0, 34.5, 35.0),   # 큰길(입구 광장 ↔ 분수 광장)
+    (23.0, 12.8, 41.0, 21.8),   # 중앙 분수 광장
+    (1.5, 25.8, 62.5, 28.6),    # 가운데 동서 거리
+    (1.5, 19.0, 23.5, 21.6),    # 서쪽 거리(생산 구역)
+    (40.5, 19.0, 62.5, 21.6),   # 동쪽 거리(주거 구역)
+    (1.5, 15.5, 4.2, 28.6),     # 서쪽 골목(유적 1 입구)
+    (59.8, 15.5, 62.5, 28.6),   # 동쪽 골목(유적 2 입구)
 ]
-DIRT = [
-    (8.0, 11.5, 63.5, 15.5),      # 북부 행정/연구 지구
-    (7.0, 22.5, 12.0, 42.5),      # 서쪽 자원/창고 지구
-    (58.0, 20.5, 66.0, 45.5),     # 동쪽 생산 지구
-    (10.0, 33.0, 28.0, 36.5),     # 서남 주거/목공
-    (47.0, 39.0, 65.0, 45.5),     # 공방/주거 지구
-    (20.5, 41.0, 38.5, 45.0),     # 경비대-정문 연결
+PLAZAS = [ROADS[0], ROADS[3]]   # 광장은 돌바닥, 나머지 거리는 흙길
+
+# ---- 건물: 키(assets/sandrock/buildings 또는 houses), 중심x, 바닥y, 폭(칸), 좌우반전 ----
+# 바닥y = 앞 길의 윗변(+0.2). 문은 그림 아래 가운데.
+B_PLAZA_N = 34.8   # 입구 광장 북쪽 면
+B_MID = 26.0       # 가운데 거리 북쪽 면
+B_SIDE = 19.2      # 서·동쪽 거리 북쪽 면
+B_CENTER = 13.0    # 분수 광장 북쪽 면
+BLDS = [
+    # 중앙 분수 광장 북쪽: 연구센터 · 시청 · 마을회관
+    ('research_center', 25.9, B_CENTER, 5.2, False),
+    ('city_hall',       32.0, B_CENTER, 6.4, False),
+    ('community_hall',  38.1, B_CENTER, 5.2, False),
+    # 서쪽 거리(생산): 광산 관리소 · 창고 · 재활용소 · 목공소
+    ('mine_office',      7.2, B_SIDE, 4.6, False),
+    ('warehouse',       11.9, B_SIDE, 4.6, False),
+    ('recycling',       16.6, B_SIDE, 4.6, False),
+    ('carpentry',       21.0, B_SIDE, 4.2, False),
+    # 동쪽 거리(주거): 길드 · 집 · 유적 관리소 · 민가
+    ('guild',           44.0, B_SIDE, 5.0, False),
+    ('house_03',        48.8, B_SIDE, 4.2, False),
+    ('ruin_office',     53.4, B_SIDE, 4.6, False),
+    ('residence',       57.8, B_SIDE, 4.0, False),
+    # 가운데 거리 서쪽: 집 · 대장간 · 집 · 의류점 · 약방
+    ('house_01',         6.6, B_MID, 4.0, False),
+    ('blacksmith',      11.4, B_MID, 5.0, False),
+    ('house_07',        16.3, B_MID, 4.2, True),
+    ('clothing',        20.9, B_MID, 4.4, False),
+    ('pharmacy',        25.9, B_MID, 4.4, False),
+    # 가운데 거리 동쪽: 교역소 · 집 · 집 · 저택 · 폐건물
+    ('trading_post',    38.1, B_MID, 4.6, False),
+    ('house_05',        42.7, B_MID, 4.2, False),
+    ('house_09',        47.0, B_MID, 4.0, True),
+    ('mansion',         52.4, B_MID, 5.6, False),
+    ('abandoned',       57.6, B_MID, 4.4, False),
+    # 입구 광장 북쪽: 경비대 · 여관 · 잡화점 | 재료상 · 식당 · 우체국
+    ('guard_hq',        16.6, B_PLAZA_N, 5.0, False),
+    ('inn',             21.6, B_PLAZA_N, 4.8, False),
+    ('general_store',   26.3, B_PLAZA_N, 4.4, False),
+    ('material_shop',   37.7, B_PLAZA_N, 4.4, False),
+    ('restaurant',      42.4, B_PLAZA_N, 4.8, False),
+    ('post_office',     47.3, B_PLAZA_N, 4.6, False),
+    # 입구 광장 양 끝 남의 집(광장 남쪽 너머 동네)
+    ('house_02',        12.0, B_PLAZA_N + 0.0, 0.0, False),  # 자리 표시용(폭 0 = 사용 안 함)
 ]
-POND = (35.0, 34.4, 5.8, 2.6)     # 중심x, 중심y, 반지름x, 반지름y
+BLDS = [b for b in BLDS if b[3] > 0]
+GATE = (32.0, 52.0, 6.6)   # 정문(성 밖으로) — 원래 마을과 같은 성문 그림
 
-# 걸어 다닐 수 있는 마을 영역(칸). 밖은 막고 어둡게 — 필드와 같은 방식(칸 단위 어둠 + 15px 페더).
-TOWN_AREA = (6, 10, 66, 50)       # x0, y0, x1, y1 (칸, x1·y1 미포함)
-TOWN_CORNER = 3                   # 모서리 둥글림(칸)
-DARK = (18, 62, 24, 0.49)         # 필드 봄 테마와 같은 어둠 색·진하기
-FEATHER = 15                      # 게임 픽셀 기준 페더(필드와 동일)
+# 소품: 경로, 이름, x, 바닥y, 폭(칸), 충돌(폭 비율, 깊이 칸)
+TP = 'town_props/'
+FP = 'field_props/spring/'
+PROPS = [
+    (TP + 'fountain', None, 32.0, 18.6, 4.2, (0.86, 1.3)),
+    (TP + 'bench_iron', None, 26.4, 20.6, 2.0, (0.9, 0.5)),
+    (TP + 'bench_iron', None, 37.6, 20.6, 2.0, (0.9, 0.5)),
+    (TP + 'lamp_iron', None, 28.6, 16.2, 1.0, (0.5, 0.3)),
+    (TP + 'lamp_iron', None, 35.4, 16.2, 1.0, (0.5, 0.3)),
+    (TP + 'signpost', '이정표', 35.6, 40.2, 1.2, (0.4, 0.3)),
+    (TP + 'stall_blue', '노점', 19.0, 39.8, 3.0, (0.85, 0.9)),
+    (TP + 'stall_red', '노점', 45.0, 39.8, 3.0, (0.85, 0.9)),
+    (TP + 'lamp_iron', None, 28.6, 38.0, 1.0, (0.5, 0.3)),
+    (TP + 'lamp_iron', None, 35.4, 38.0, 1.0, (0.5, 0.3)),
+    (TP + 'barrel_bucket', None, 14.6, 40.6, 1.4, (0.8, 0.4)),
+    (TP + 'woodpile', None, 21.6, 24.0, 1.6, (0.9, 0.5)),
+    (TP + 'cart', None, 9.2, 23.6, 2.2, (0.85, 0.6)),
+    (TP + 'lamp_wood', None, 31.0, 30.0, 1.1, (0.4, 0.3)),
+    (TP + 'lamp_wood', None, 33.0, 24.0, 1.1, (0.4, 0.3)),
+    (FP + '16_cave', '유적 입구 (준비 중)', 2.85, 16.6, 2.6, (0.9, 1.0)),
+    (FP + '16_cave', '유적 입구 (준비 중)', 61.15, 16.6, 2.6, (0.9, 1.0)),
+]
+# 어두운 바깥(못 가는 곳)의 나무 — 마을 가장자리 숲
+TREES = [(x, y) for x, y in [
+    (6, 8), (12, 7), (18, 9), (46, 8), (52, 7), (58, 9), (3, 33), (8, 36), (5, 42), (10, 47), (17, 48), (24, 47),
+    (40, 47), (47, 48), (54, 47), (59, 42), (56, 36), (61, 33), (27, 31.5), (37, 31.5), (2, 12), (62, 12), (44, 3.5), (20, 3.5),
+]]
+
+SPAWN = (32.0, 45.5)      # 시작·성 밖에서 돌아올 때(정문 안쪽)
+FOUNTAIN_PORTAL = (29.0, 18.0)
+# 행인이 돌아다닐 지점(칸)
+WP = [(18, 38), (24, 40), (30, 37), (36, 38), (42, 40), (47, 38), (32, 31), (32, 24), (27, 17), (37, 17), (32, 21),
+      (8, 27.2), (15, 27.2), (24, 27.2), (40, 27.2), (50, 27.2), (57, 27.2), (8, 20.3), (16, 20.3), (45, 20.3), (55, 20.3)]
 
 
-def walkable(x, y):
-    x0, y0, x1, y1 = TOWN_AREA
-    if not (x0 <= x < x1 and y0 <= y < y1): return False
-    r = TOWN_CORNER
-    cx = min(max(x + 0.5, x0 + r), x1 - r); cy = min(max(y + 0.5, y0 + r), y1 - r)
-    return (x + 0.5 - cx) ** 2 + (y + 0.5 - cy) ** 2 <= r * r
+def tile_kind():
+    """0 = 길, 1 = 건물 터(밝은 풀, 막힘), 2 = 바깥(어둡게, 막힘)"""
+    k = np.full((SAND_H, SAND_W), 2, np.int8)
+    for y in range(SAND_H):
+        for x in range(SAND_W):
+            cx, cy = x + 0.5, y + 0.5
+            if any(r[0] <= cx <= r[2] and r[1] <= cy <= r[3] for r in ROADS): k[y, x] = 0
+    road = k == 0
+    for y in range(SAND_H):
+        for x in range(SAND_W):
+            if k[y, x] == 0: continue
+            if road[y + 1:min(SAND_H, y + 7), x].any(): k[y, x] = 1   # 길 바로 북쪽 6칸 = 건물 터
+    return k
 
 
 def edge_solids(TS):
-    out = []
+    k = tile_kind(); out = []
     for y in range(SAND_H):
         x = 0
         while x < SAND_W:
-            if walkable(x, y): x += 1; continue
+            if k[y, x] == 0: x += 1; continue
             s = x
-            while x < SAND_W and not walkable(x, y): x += 1
+            while x < SAND_W and k[y, x] != 0: x += 1
             out.append(dict(x0=s * TS, x1=x * TS, y0=y * TS, y1=(y + 1) * TS))
     return out
 
-# 건물: assets/sandrock/buildings/<key>.png, 중심x, 바닥y, 폭(칸), 문 x 보정(폭 비율)
-BLDS = [
-    ('city_hall',       36.0, 12.8, 6.6, 0.00),
-    ('research_center', 24.0, 13.4, 5.4, 0.00),
-    ('community_hall',  47.5, 13.4, 5.4, 0.00),
-    ('mine_office',     13.0, 13.8, 5.2, 0.00),
-    ('ruin_office',     58.0, 13.8, 5.2, 0.00),
-    ('guild',           36.0, 18.6, 5.6, 0.00),
-    ('post_office',     20.5, 21.0, 4.6, 0.00),
-    ('general_store',   27.0, 21.0, 4.6, 0.00),
-    ('material_shop',   45.0, 21.0, 4.6, 0.00),
-    ('clothing',        51.5, 21.0, 4.6, 0.00),
-    ('blacksmith',      58.0, 22.0, 5.2, 0.00),
-    ('recycling',        9.5, 24.7, 5.0, 0.00),
-    ('restaurant',      28.0, 30.0, 5.0, 0.00),
-    ('inn',             36.0, 30.0, 5.4, 0.00),
-    ('pharmacy',        44.0, 30.0, 4.6, 0.00),
-    ('trading_post',    51.0, 30.0, 5.0, 0.00),
-    ('carpentry',       18.0, 35.0, 5.2, 0.00),
-    ('warehouse',        9.5, 35.0, 5.2, 0.00),
-    ('mansion',         61.0, 35.2, 5.8, 0.00),
-    ('residence',       53.0, 40.5, 4.8, 0.00),
-    ('abandoned',       10.5, 42.3, 5.0, 0.00),
-    ('guard_hq',        26.0, 43.5, 6.0, 0.00),
-    ('workshop',        61.0, 44.2, 5.6, 0.00),
-]
-GATE = (36.0, 50.0, 7.0)   # 정문(성 밖으로) — 원래 마을과 같은 성문 그림
 
-# 소품(원래 마을과 같은 마을 소품 그림): 경로, 이름, x, 바닥y, 폭(칸), 충돌(폭 비율, 깊이 칸)
-TP = 'town_props/'
-PROPS = [
-    (TP + 'fountain', None, 36.0, 25.2, 4.2, (0.86, 1.3)),
-    (TP + 'signpost', '이정표', 39.8, 28.2, 1.2, (0.4, 0.3)),
-    (TP + 'well', '우물', 49.0, 39.0, 2.4, (0.8, 0.9)),
-    (TP + 'stall_blue', '노점', 23.5, 25.5, 3.0, (0.85, 0.9)),
-    (TP + 'stall_red', '노점', 48.5, 25.5, 3.0, (0.85, 0.9)),
-    (TP + 'bench_iron', None, 31.0, 26.3, 2.0, (0.9, 0.5)),
-    (TP + 'bench_iron', None, 41.0, 26.3, 2.0, (0.9, 0.5)),
-    (TP + 'lamp_iron', None, 27.0, 24.2, 1.0, (0.5, 0.3)),
-    (TP + 'lamp_iron', None, 45.0, 24.2, 1.0, (0.5, 0.3)),
-    (TP + 'lamp_iron', None, 31.0, 18.0, 1.0, (0.5, 0.3)),
-    (TP + 'lamp_iron', None, 41.0, 18.0, 1.0, (0.5, 0.3)),
-    (TP + 'lamp_wood', None, 38.8, 31.0, 1.1, (0.4, 0.3)),
-    (TP + 'lamp_wood', None, 40.0, 39.0, 1.1, (0.4, 0.3)),
-    (TP + 'woodpile', None, 21.8, 38.6, 1.9, (0.9, 0.5)),
-    (TP + 'cart', None, 13.0, 38.4, 2.4, (0.85, 0.6)),
-    (TP + 'barrel_bucket', None, 55.0, 25.6, 1.4, (0.8, 0.4)),
-    (TP + 'tree_big', None, 17.0, 17.2, 4.0, (0.16, 0.3)),
-    (TP + 'tree_blossom', None, 30.5, 16.2, 3.2, (0.16, 0.3)),
-    (TP + 'tree_big', None, 54.5, 17.0, 4.0, (0.16, 0.3)),
-    (TP + 'tree_small', None, 42.0, 16.4, 3.0, (0.16, 0.3)),
-    (TP + 'tree_big', None, 29.0, 38.0, 4.0, (0.16, 0.3)),
-    (TP + 'tree_small', None, 44.5, 38.0, 3.0, (0.16, 0.3)),
-    (TP + 'tree_blossom', None, 46.5, 46.0, 3.2, (0.16, 0.3)),
-    (TP + 'tree_big', None, 68.0, 30.0, 4.0, (0.16, 0.3)),
-    (TP + 'tree_small', None, 4.0, 30.0, 3.0, (0.16, 0.3)),
-    (TP + 'tree_big', None, 4.0, 46.0, 4.0, (0.16, 0.3)),
-    (TP + 'tree_big', None, 68.0, 47.0, 4.0, (0.16, 0.3)),
-]
-
-# NPC: 건물 앞 고정(경비대만 둘). 이름은 아직 미정 → 건물 이름만 보여 준다(GPT 임시 이름은 쓰지 않음).
-SPAWN = (39.0, 42.0)       # 첫 시작·성 밖에서 돌아올 때 위치(정문 안쪽 큰길)
+DARK = (18, 62, 24, 0.49)   # 필드 봄 테마와 같은 어둠
+FEATHER = 15                # 게임 픽셀 기준 페더(필드와 동일)
 
 
 def gen_ground(R, px, seed, cache):
@@ -125,57 +144,33 @@ def gen_ground(R, px, seed, cache):
     def tex(n):
         t = np.asarray(Image.open(R + f'tiles/spring/{n}.png').convert('RGB').resize((px, px), Image.LANCZOS))
         return np.tile(t, (mh, mw, 1)).astype(np.float32)
-    grass, flower, cobble, dirt, sand, water = (tex(n) for n in ('grass', 'grass_flower', 'path', 'dirt', 'sand', 'water'))
+    grass, flower, cobble, dirt = (tex(n) for n in ('grass', 'grass_flower', 'path', 'dirt'))
     yy, xx = np.mgrid[0:H, 0:W].astype(np.float32) / px
     def noise(scale, amp):
         n = rng.rand(H // 8 + 2, W // 8 + 2).astype(np.float32); n = nd.gaussian_filter(n, scale / 8)
         n = (n - n.mean()) / (n.std() + 1e-6)
         return np.asarray(Image.fromarray(n).resize((W, H), Image.BILINEAR)) * amp
     N1, N2 = noise(24, 0.18), noise(60, 0.5)
-    def union(rects):
+    def mask(rects, soft):
         s = np.full((H, W), 1e9, np.float32)
         for x0, y0, x1, y1 in rects:
             dx = np.maximum(x0 - xx, xx - x1); dy = np.maximum(y0 - yy, yy - y1)
             s = np.minimum(s, np.hypot(np.maximum(dx, 0), np.maximum(dy, 0)) + np.minimum(np.maximum(dx, dy), 0))
-        return s
+        return np.clip(0.5 - (s + N1 * 0.6) / soft, 0, 1)[..., None]
     img = grass.copy()
     fm = np.zeros((H, W), np.float32)
-    for _ in range(16):
+    for _ in range(18):
         cx, cy, r = random.uniform(1, mw - 1), random.uniform(1, mh - 1), random.uniform(1.0, 2.2)
         fm = np.maximum(fm, np.clip(1.4 - np.hypot(xx - cx, yy - cy) / r + N2 * 0.6, 0, 1))
     img = img * (1 - fm[..., None]) + flower * fm[..., None]
-    sd = union(DIRT)
-    md = np.clip(0.5 - (sd + N1) / 0.25, 0, 1)[..., None]
-    shade = np.clip(0.5 - (sd + N1 - 0.12) / 0.25, 0, 1)[..., None] - md
-    img = img * (1 - 0.25 * np.clip(shade, 0, 1)); img = img * (1 - md) + dirt * md
-    sc = union(COBBLE)
-    mc = np.clip(0.5 - (sc + N1 * 0.25) / 0.06, 0, 1)[..., None]
-    rim = np.clip(0.5 - (sc - 0.10) / 0.10, 0, 1)[..., None] - mc
-    img = img * (1 - 0.35 * np.clip(rim, 0, 1)); img = img * (1 - mc) + cobble * mc
-    pcx, pcy, prx, pry = POND
-    pd = np.hypot((xx - pcx) / prx, (yy - pcy) / pry) - 1 + N2 * 0.06
-    ms = np.clip(0.5 - (pd - 0.26) / 0.10, 0, 1)[..., None]
-    mwt = np.clip(0.5 - pd / 0.06, 0, 1)[..., None]
-    img = img * (1 - ms) + sand * ms; img = img * (1 - mwt) + water * mwt
-    # 못 가는 곳: 칸 단위로 어둡게 칠한 뒤 페더(필드 field_dungeon.js와 같은 방식)
-    shade = np.zeros((mh, mw), np.float32)
-    for y in range(mh):
-        for x in range(mw):
-            if not walkable(x, y): shade[y, x] = 1
-    shade = np.kron(shade, np.ones((px, px), np.float32))
-    shade = nd.gaussian_filter(shade, FEATHER * px / 48)
+    streets = [r for r in ROADS if r not in PLAZAS]
+    md = mask(streets, 0.22)
+    img = img * (1 - 0.22 * np.clip(mask(streets, 0.5) - md, 0, 1)); img = img * (1 - md) + dirt * md
+    mc = mask(PLAZAS, 0.08)
+    img = img * (1 - 0.3 * np.clip(mask(PLAZAS, 0.25) - mc, 0, 1)); img = img * (1 - mc) + cobble * mc
+    # 못 가는 곳: 칸 단위 어둠 → 페더(필드 field_dungeon.js와 같은 방식)
+    shade = (tile_kind() == 2).astype(np.float32)
+    shade = nd.gaussian_filter(np.kron(shade, np.ones((px, px), np.float32)), FEATHER * px / 48)
     a = DARK[3] * shade[..., None]
     img = img * (1 - a) + np.array(DARK[:3], np.float32) * a
     g = Image.fromarray(img.clip(0, 255).astype(np.uint8)); g.save(cache); return g
-
-
-def pond_solids(TS):
-    """연못: 타원을 가로 띠 여러 개로 막는다."""
-    cx, cy, rx, ry = POND
-    out = []
-    for i in range(8):
-        t0, t1 = -1 + i / 4, -1 + (i + 1) / 4
-        tm = (t0 + t1) / 2
-        half = rx * 0.92 * (1 - tm * tm) ** 0.5
-        out.append(dict(x0=(cx - half) * TS, x1=(cx + half) * TS, y0=(cy + t0 * ry * 0.92) * TS, y1=(cy + t1 * ry * 0.92) * TS))
-    return out
