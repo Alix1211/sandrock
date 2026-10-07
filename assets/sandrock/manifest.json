@@ -1,0 +1,2134 @@
+{
+ "player/luciera_walk": {
+  "name": "루시에라 걷기(정면/뒷면/옆면 x5)",
+  "src": "player_luciera.png",
+  "size": [
+   1415,
+   1092
+  ],
+  "cell": [
+   283,
+   364
+  ]
+ },
+ "buildings/city_hall": {
+  "name": "시청",
+  "src": "bld_sheet_8.png",
+  "size": [
+   440,
+   414
+  ]
+ },
+ "buildings/workshop": {
+  "name": "공방",
+  "src": "bld_sheet_8.png",
+  "size": [
+   420,
+   413
+  ]
+ },
+ "buildings/material_shop": {
+  "name": "재료상",
+  "src": "bld_sheet_8.png",
+  "size": [
+   417,
+   412
+  ]
+ },
+ "buildings/general_store": {
+  "name": "잡화점",
+  "src": "bld_sheet_8.png",
+  "size": [
+   415,
+   414
+  ]
+ },
+ "buildings/blacksmith": {
+  "name": "대장간",
+  "src": "bld_sheet_8.png",
+  "size": [
+   457,
+   424
+  ]
+ },
+ "buildings/research_center": {
+  "name": "연구센터",
+  "src": "bld_sheet_8.png",
+  "size": [
+   423,
+   430
+  ]
+ },
+ "buildings/recycling": {
+  "name": "재활용소",
+  "src": "bld_sheet_8.png",
+  "size": [
+   428,
+   388
+  ]
+ },
+ "buildings/carpentry": {
+  "name": "목공소",
+  "src": "bld_sheet_8.png",
+  "size": [
+   438,
+   426
+  ]
+ },
+ "buildings/clothing": {
+  "name": "의류점",
+  "src": "bld_09.png",
+  "size": [
+   1198,
+   1233
+  ]
+ },
+ "buildings/pharmacy": {
+  "name": "약방",
+  "src": "bld_10.png",
+  "size": [
+   1195,
+   1199
+  ]
+ },
+ "buildings/inn": {
+  "name": "여관",
+  "src": "bld_11.png",
+  "size": [
+   1201,
+   1215
+  ]
+ },
+ "buildings/restaurant": {
+  "name": "식당",
+  "src": "bld_12.png",
+  "size": [
+   1216,
+   1235
+  ]
+ },
+ "buildings/guild": {
+  "name": "길드",
+  "src": "bld_13.png",
+  "size": [
+   1229,
+   1221
+  ]
+ },
+ "buildings/warehouse": {
+  "name": "창고",
+  "src": "bld_14.png",
+  "size": [
+   1251,
+   1236
+  ]
+ },
+ "buildings/trading_post": {
+  "name": "교역소",
+  "src": "bld_15.png",
+  "size": [
+   1243,
+   1203
+  ]
+ },
+ "buildings/post_office": {
+  "name": "우체국",
+  "src": "bld_16.png",
+  "size": [
+   1221,
+   1246
+  ]
+ },
+ "buildings/mine_office": {
+  "name": "광산 관리소",
+  "src": "bld_17.png",
+  "size": [
+   1234,
+   1226
+  ]
+ },
+ "buildings/ruin_office": {
+  "name": "유적 관리소",
+  "src": "bld_18.png",
+  "size": [
+   1250,
+   1249
+  ]
+ },
+ "buildings/guard_hq": {
+  "name": "경비대",
+  "src": "bld_19.png",
+  "size": [
+   1250,
+   1224
+  ]
+ },
+ "buildings/community_hall": {
+  "name": "마을회관",
+  "src": "bld_20.png",
+  "size": [
+   1232,
+   1232
+  ]
+ },
+ "buildings/residence": {
+  "name": "민가",
+  "src": "bld_21.png",
+  "size": [
+   1247,
+   1230
+  ]
+ },
+ "buildings/mansion": {
+  "name": "저택",
+  "src": "bld_22.png",
+  "size": [
+   1228,
+   1224
+  ]
+ },
+ "buildings/abandoned": {
+  "name": "폐건물",
+  "src": "bld_23.png",
+  "size": [
+   1254,
+   1226
+  ]
+ },
+ "npcs/general_store": {
+  "name": "잡화점",
+  "src": "npc_sheet_1.png",
+  "size": [
+   460,
+   705
+  ]
+ },
+ "npcs/workshop": {
+  "name": "공방",
+  "src": "npc_sheet_1.png",
+  "size": [
+   371,
+   701
+  ]
+ },
+ "npcs/carpentry": {
+  "name": "목공소",
+  "src": "npc_sheet_1.png",
+  "size": [
+   447,
+   685
+  ]
+ },
+ "npcs/research_center": {
+  "name": "연구센터",
+  "src": "npc_sheet_1.png",
+  "size": [
+   459,
+   657
+  ]
+ },
+ "npcs/city_hall": {
+  "name": "시청",
+  "src": "npc_sheet_1.png",
+  "size": [
+   407,
+   692
+  ]
+ },
+ "npcs/recycling": {
+  "name": "재활용소",
+  "src": "npc_sheet_2.png",
+  "size": [
+   462,
+   649
+  ]
+ },
+ "npcs/material_shop": {
+  "name": "재료상",
+  "src": "npc_sheet_2.png",
+  "size": [
+   422,
+   649
+  ]
+ },
+ "npcs/blacksmith": {
+  "name": "대장간",
+  "src": "npc_sheet_2.png",
+  "size": [
+   457,
+   692
+  ]
+ },
+ "npcs/clothing": {
+  "name": "의류점",
+  "src": "npc_sheet_2.png",
+  "size": [
+   472,
+   645
+  ]
+ },
+ "npcs/mine_office": {
+  "name": "광산 관리소",
+  "src": "npc_sheet_2.png",
+  "size": [
+   383,
+   662
+  ]
+ },
+ "npcs/guild": {
+  "name": "길드",
+  "src": "npc_sheet_3.png",
+  "size": [
+   447,
+   676
+  ]
+ },
+ "npcs/post_office": {
+  "name": "우체국",
+  "src": "npc_sheet_3.png",
+  "size": [
+   459,
+   642
+  ]
+ },
+ "npcs/inn": {
+  "name": "여관",
+  "src": "npc_sheet_3.png",
+  "size": [
+   424,
+   642
+  ]
+ },
+ "npcs/restaurant": {
+  "name": "식당",
+  "src": "npc_sheet_3.png",
+  "size": [
+   453,
+   638
+  ]
+ },
+ "npcs/pharmacy": {
+  "name": "약방",
+  "src": "npc_sheet_3.png",
+  "size": [
+   428,
+   636
+  ]
+ },
+ "npcs/warehouse": {
+  "name": "창고",
+  "src": "npc_sheet_4.png",
+  "size": [
+   458,
+   660
+  ]
+ },
+ "npcs/trading_post": {
+  "name": "교역소",
+  "src": "npc_sheet_4.png",
+  "size": [
+   447,
+   649
+  ]
+ },
+ "npcs/residence": {
+  "name": "민가",
+  "src": "npc_sheet_4.png",
+  "size": [
+   401,
+   607
+  ]
+ },
+ "npcs/ruin_office": {
+  "name": "유적 관리소",
+  "src": "npc_sheet_4.png",
+  "size": [
+   465,
+   644
+  ]
+ },
+ "npcs/community_hall": {
+  "name": "마을회관",
+  "src": "npc_sheet_4.png",
+  "size": [
+   419,
+   643
+  ]
+ },
+ "npcs/mansion": {
+  "name": "저택",
+  "src": "npc_sheet_5.png",
+  "size": [
+   539,
+   709
+  ]
+ },
+ "npcs/abandoned": {
+  "name": "폐건물",
+  "src": "npc_sheet_5.png",
+  "size": [
+   505,
+   717
+  ]
+ },
+ "npcs/guard_m": {
+  "name": "경비대 남",
+  "src": "npc_sheet_5.png",
+  "size": [
+   560,
+   723
+  ]
+ },
+ "npcs/guard_f": {
+  "name": "경비대 여",
+  "src": "npc_sheet_5.png",
+  "size": [
+   504,
+   721
+  ]
+ },
+ "stations/workbench": {
+  "name": "작업대",
+  "src": "station_sheet_1.png",
+  "size": [
+   433,
+   400
+  ]
+ },
+ "stations/workbench_adv": {
+  "name": "고급 작업대",
+  "src": "station_sheet_1.png",
+  "size": [
+   492,
+   446
+  ]
+ },
+ "stations/furnace": {
+  "name": "용광로",
+  "src": "station_sheet_1.png",
+  "size": [
+   445,
+   458
+  ]
+ },
+ "stations/furnace_adv": {
+  "name": "고급 용광로",
+  "src": "station_sheet_1.png",
+  "size": [
+   464,
+   509
+  ]
+ },
+ "stations/anvil": {
+  "name": "모루",
+  "src": "station_sheet_1.png",
+  "size": [
+   433,
+   435
+  ]
+ },
+ "stations/cutting_bench": {
+  "name": "절단대",
+  "src": "station_sheet_1.png",
+  "size": [
+   484,
+   489
+  ]
+ },
+ "stations/grinding_bench": {
+  "name": "연마대",
+  "src": "station_sheet_2.png",
+  "size": [
+   499,
+   459
+  ]
+ },
+ "stations/woodworking_bench": {
+  "name": "목공 작업대",
+  "src": "station_sheet_2.png",
+  "size": [
+   490,
+   418
+  ]
+ },
+ "stations/assembly_bench": {
+  "name": "조립대",
+  "src": "station_sheet_2.png",
+  "size": [
+   471,
+   460
+  ]
+ },
+ "stations/machine_bench": {
+  "name": "기계 조립대",
+  "src": "station_sheet_2.png",
+  "size": [
+   486,
+   451
+  ]
+ },
+ "stations/leather_bench": {
+  "name": "가죽 작업대",
+  "src": "station_sheet_2.png",
+  "size": [
+   507,
+   462
+  ]
+ },
+ "stations/sewing_bench": {
+  "name": "재봉 작업대",
+  "src": "station_sheet_2.png",
+  "size": [
+   483,
+   456
+  ]
+ },
+ "stations/alchemy_bench": {
+  "name": "약제대",
+  "src": "station_sheet_3.png",
+  "size": [
+   491,
+   509
+  ]
+ },
+ "stations/dismantle_bench": {
+  "name": "분해대",
+  "src": "station_sheet_3.png",
+  "size": [
+   467,
+   421
+  ]
+ },
+ "stations/recycle_machine": {
+  "name": "재활용 가공대",
+  "src": "station_sheet_3.png",
+  "size": [
+   477,
+   436
+  ]
+ },
+ "stations/ore_storage": {
+  "name": "광석 보관함",
+  "src": "station_sheet_3.png",
+  "size": [
+   505,
+   430
+  ]
+ },
+ "stations/wood_storage": {
+  "name": "목재 보관함",
+  "src": "station_sheet_3.png",
+  "size": [
+   493,
+   426
+  ]
+ },
+ "stations/parts_storage": {
+  "name": "부품 보관함",
+  "src": "station_sheet_3.png",
+  "size": [
+   486,
+   438
+  ]
+ },
+ "stations/goods_storage": {
+  "name": "완성품 보관함",
+  "src": "station_sheet_4.png",
+  "size": [
+   454,
+   460
+  ]
+ },
+ "stations/tool_rack": {
+  "name": "공구 걸이",
+  "src": "station_sheet_4.png",
+  "size": [
+   483,
+   457
+  ]
+ },
+ "stations/shelf": {
+  "name": "선반",
+  "src": "station_sheet_4.png",
+  "size": [
+   473,
+   470
+  ]
+ },
+ "stations/blueprint_board": {
+  "name": "도면 게시판",
+  "src": "station_sheet_4.png",
+  "size": [
+   496,
+   470
+  ]
+ },
+ "stations/experiment_table": {
+  "name": "실험 테이블",
+  "src": "station_sheet_4.png",
+  "size": [
+   507,
+   458
+  ]
+ },
+ "stations/repair_table": {
+  "name": "수리 테이블",
+  "src": "station_sheet_4.png",
+  "size": [
+   490,
+   462
+  ]
+ },
+ "stations/packing_table": {
+  "name": "포장 작업대",
+  "src": "station_sheet_5.png",
+  "size": [
+   540,
+   424
+  ]
+ },
+ "stations/small_forge": {
+  "name": "작은 화로",
+  "src": "station_sheet_5.png",
+  "size": [
+   451,
+   392
+  ]
+ },
+ "stations/cooling_tub": {
+  "name": "냉각 통",
+  "src": "station_sheet_5.png",
+  "size": [
+   468,
+   460
+  ]
+ },
+ "stations/hammer_rack": {
+  "name": "망치 거치대",
+  "src": "station_sheet_5.png",
+  "size": [
+   489,
+   439
+  ]
+ },
+ "stations/saw_rack": {
+  "name": "톱 거치대",
+  "src": "station_sheet_5.png",
+  "size": [
+   491,
+   451
+  ]
+ },
+ "stations/tong_rack": {
+  "name": "집게 거치대",
+  "src": "station_sheet_5.png",
+  "size": [
+   460,
+   427
+  ]
+ },
+ "stations/parts_box": {
+  "name": "톱니/부품 상자",
+  "src": "station_sheet_6.png",
+  "size": [
+   494,
+   454
+  ]
+ },
+ "stations/work_chair": {
+  "name": "작업 의자",
+  "src": "station_sheet_6.png",
+  "size": [
+   326,
+   474
+  ]
+ },
+ "stations/work_lamp": {
+  "name": "작업등",
+  "src": "station_sheet_6.png",
+  "size": [
+   416,
+   473
+  ]
+ },
+ "stations/wall_clock": {
+  "name": "벽시계",
+  "src": "station_sheet_6.png",
+  "size": [
+   341,
+   493
+  ]
+ },
+ "stations/order_board": {
+  "name": "주문 게시판",
+  "src": "station_sheet_6.png",
+  "size": [
+   462,
+   474
+  ]
+ },
+ "icons/wood": {
+  "name": "나무",
+  "src": "icon_sheet_1.png",
+  "size": [
+   169,
+   157
+  ]
+ },
+ "icons/hardwood": {
+  "name": "단단한 나무",
+  "src": "icon_sheet_1.png",
+  "size": [
+   176,
+   166
+  ]
+ },
+ "icons/oldwood": {
+  "name": "고목 조각",
+  "src": "icon_sheet_1.png",
+  "size": [
+   179,
+   168
+  ]
+ },
+ "icons/sap": {
+  "name": "나무 수액",
+  "src": "icon_sheet_1.png",
+  "size": [
+   138,
+   167
+  ]
+ },
+ "icons/vines": {
+  "name": "덩굴",
+  "src": "icon_sheet_1.png",
+  "size": [
+   172,
+   174
+  ]
+ },
+ "icons/twigs": {
+  "name": "나뭇가지",
+  "src": "icon_sheet_1.png",
+  "size": [
+   177,
+   164
+  ]
+ },
+ "icons/stone": {
+  "name": "돌",
+  "src": "icon_sheet_1.png",
+  "size": [
+   171,
+   154
+  ]
+ },
+ "icons/rough_stone": {
+  "name": "거친 석재",
+  "src": "icon_sheet_1.png",
+  "size": [
+   163,
+   170
+  ]
+ },
+ "icons/clay": {
+  "name": "점토",
+  "src": "icon_sheet_1.png",
+  "size": [
+   175,
+   147
+  ]
+ },
+ "icons/sand": {
+  "name": "모래",
+  "src": "icon_sheet_1.png",
+  "size": [
+   182,
+   132
+  ]
+ },
+ "icons/gravel": {
+  "name": "자갈",
+  "src": "icon_sheet_1.png",
+  "size": [
+   179,
+   142
+  ]
+ },
+ "icons/quartz": {
+  "name": "석영 조각",
+  "src": "icon_sheet_1.png",
+  "size": [
+   146,
+   170
+  ]
+ },
+ "icons/copper_ore": {
+  "name": "구리 광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   180,
+   170
+  ]
+ },
+ "icons/tin_ore": {
+  "name": "주석 광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   171,
+   173
+  ]
+ },
+ "icons/zinc_ore": {
+  "name": "아연 광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   171,
+   169
+  ]
+ },
+ "icons/iron_ore": {
+  "name": "철광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   168,
+   175
+  ]
+ },
+ "icons/silver_ore": {
+  "name": "은광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   172,
+   170
+  ]
+ },
+ "icons/gold_ore": {
+  "name": "금광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   177,
+   170
+  ]
+ },
+ "icons/coal": {
+  "name": "석탄",
+  "src": "icon_sheet_1.png",
+  "size": [
+   179,
+   166
+  ]
+ },
+ "icons/magnetite": {
+  "name": "자철석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   169,
+   174
+  ]
+ },
+ "icons/crystal_ore": {
+  "name": "수정 광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   178,
+   173
+  ]
+ },
+ "icons/mana_ore": {
+  "name": "마력 광석",
+  "src": "icon_sheet_1.png",
+  "size": [
+   168,
+   177
+  ]
+ },
+ "icons/plant_fiber": {
+  "name": "식물 섬유",
+  "src": "icon_sheet_1.png",
+  "size": [
+   179,
+   175
+  ]
+ },
+ "icons/herb": {
+  "name": "약초",
+  "src": "icon_sheet_1.png",
+  "size": [
+   173,
+   173
+  ]
+ },
+ "icons/red_herb": {
+  "name": "붉은 약초",
+  "src": "icon_sheet_1.png",
+  "size": [
+   169,
+   176
+  ]
+ },
+ "icons/blue_herb": {
+  "name": "푸른 약초",
+  "src": "icon_sheet_1.png",
+  "size": [
+   176,
+   173
+  ]
+ },
+ "icons/mushroom": {
+  "name": "버섯",
+  "src": "icon_sheet_1.png",
+  "size": [
+   154,
+   167
+  ]
+ },
+ "icons/poison_mushroom": {
+  "name": "독버섯",
+  "src": "icon_sheet_1.png",
+  "size": [
+   166,
+   172
+  ]
+ },
+ "icons/wildflower": {
+  "name": "야생 꽃",
+  "src": "icon_sheet_1.png",
+  "size": [
+   179,
+   174
+  ]
+ },
+ "icons/aromatic_herb": {
+  "name": "향초",
+  "src": "icon_sheet_1.png",
+  "size": [
+   180,
+   177
+  ]
+ },
+ "icons/berry": {
+  "name": "열매",
+  "src": "icon_sheet_1.png",
+  "size": [
+   173,
+   168
+  ]
+ },
+ "icons/water_lily": {
+  "name": "수련잎",
+  "src": "icon_sheet_1.png",
+  "size": [
+   174,
+   146
+  ]
+ },
+ "icons/swamp_moss": {
+  "name": "늪 이끼",
+  "src": "icon_sheet_1.png",
+  "size": [
+   177,
+   172
+  ]
+ },
+ "icons/scrap_iron": {
+  "name": "폐철",
+  "src": "icon_sheet_1.png",
+  "size": [
+   177,
+   167
+  ]
+ },
+ "icons/broken_glass": {
+  "name": "깨진 유리",
+  "src": "icon_sheet_1.png",
+  "size": [
+   182,
+   164
+  ]
+ },
+ "icons/old_cloth": {
+  "name": "헌천 조각",
+  "src": "icon_sheet_1.png",
+  "size": [
+   179,
+   170
+  ]
+ },
+ "icons/old_rope": {
+  "name": "낡은 로프",
+  "src": "icon_sheet_1.png",
+  "size": [
+   187,
+   166
+  ]
+ },
+ "icons/broken_gear": {
+  "name": "고장난 톱니",
+  "src": "icon_sheet_1.png",
+  "size": [
+   166,
+   168
+  ]
+ },
+ "icons/damaged_sheet": {
+  "name": "망가진 판금",
+  "src": "icon_sheet_1.png",
+  "size": [
+   184,
+   173
+  ]
+ },
+ "icons/ancient_fragment": {
+  "name": "고대 파편",
+  "src": "icon_sheet_1.png",
+  "size": [
+   163,
+   176
+  ]
+ },
+ "icons/ancient_wreck": {
+  "name": "고대 기계 잔해",
+  "src": "icon_sheet_2.png",
+  "size": [
+   181,
+   169
+  ]
+ },
+ "icons/broken_tablet": {
+  "name": "부서진 석판",
+  "src": "icon_sheet_2.png",
+  "size": [
+   174,
+   189
+  ]
+ },
+ "icons/rusty_screw": {
+  "name": "녹슨 나사 부품",
+  "src": "icon_sheet_2.png",
+  "size": [
+   169,
+   162
+  ]
+ },
+ "icons/leather": {
+  "name": "가죽",
+  "src": "icon_sheet_2.png",
+  "size": [
+   189,
+   179
+  ]
+ },
+ "icons/tough_leather": {
+  "name": "질긴 가죽",
+  "src": "icon_sheet_2.png",
+  "size": [
+   183,
+   172
+  ]
+ },
+ "icons/fur_hide": {
+  "name": "털가죽",
+  "src": "icon_sheet_2.png",
+  "size": [
+   186,
+   168
+  ]
+ },
+ "icons/bone": {
+  "name": "뼈 조각",
+  "src": "icon_sheet_2.png",
+  "size": [
+   170,
+   173
+  ]
+ },
+ "icons/fang": {
+  "name": "송곳니",
+  "src": "icon_sheet_2.png",
+  "size": [
+   126,
+   179
+  ]
+ },
+ "icons/horn": {
+  "name": "뿔 조각",
+  "src": "icon_sheet_2.png",
+  "size": [
+   161,
+   185
+  ]
+ },
+ "icons/slime": {
+  "name": "점액",
+  "src": "icon_sheet_2.png",
+  "size": [
+   192,
+   168
+  ]
+ },
+ "icons/poison_sac": {
+  "name": "독낭",
+  "src": "icon_sheet_2.png",
+  "size": [
+   165,
+   191
+  ]
+ },
+ "icons/feather": {
+  "name": "깃털",
+  "src": "icon_sheet_2.png",
+  "size": [
+   184,
+   187
+  ]
+ },
+ "icons/spider_thread": {
+  "name": "거미줄 실",
+  "src": "icon_sheet_2.png",
+  "size": [
+   176,
+   186
+  ]
+ },
+ "icons/hive_resin": {
+  "name": "벌집 수지",
+  "src": "icon_sheet_2.png",
+  "size": [
+   180,
+   194
+  ]
+ },
+ "icons/elemental_shard": {
+  "name": "정령 파편",
+  "src": "icon_sheet_2.png",
+  "size": [
+   134,
+   200
+  ]
+ },
+ "icons/ghost_dust": {
+  "name": "유령 가루",
+  "src": "icon_sheet_2.png",
+  "size": [
+   190,
+   167
+  ]
+ },
+ "icons/demonstone": {
+  "name": "악마석 파편",
+  "src": "icon_sheet_2.png",
+  "size": [
+   153,
+   194
+  ]
+ },
+ "icons/mana_nucleus": {
+  "name": "마력 핵",
+  "src": "icon_sheet_2.png",
+  "size": [
+   176,
+   179
+  ]
+ },
+ "icons/plank": {
+  "name": "판재",
+  "src": "icon_sheet_2.png",
+  "size": [
+   189,
+   177
+  ]
+ },
+ "icons/hardwood_plank": {
+  "name": "단단한 판재",
+  "src": "icon_sheet_2.png",
+  "size": [
+   187,
+   177
+  ]
+ },
+ "icons/charcoal": {
+  "name": "목탄",
+  "src": "icon_sheet_2.png",
+  "size": [
+   190,
+   176
+  ]
+ },
+ "icons/wooden_handle": {
+  "name": "나무 손잡이",
+  "src": "icon_sheet_2.png",
+  "size": [
+   174,
+   181
+  ]
+ },
+ "icons/timber_beam": {
+  "name": "목재 들보",
+  "src": "icon_sheet_2.png",
+  "size": [
+   179,
+   180
+  ]
+ },
+ "icons/wood_frame": {
+  "name": "목재 프레임",
+  "src": "icon_sheet_2.png",
+  "size": [
+   177,
+   178
+  ]
+ },
+ "icons/stone_block": {
+  "name": "석재 블록",
+  "src": "icon_sheet_2.png",
+  "size": [
+   174,
+   175
+  ]
+ },
+ "icons/dressed_stone": {
+  "name": "다듬은 석재",
+  "src": "icon_sheet_2.png",
+  "size": [
+   171,
+   173
+  ]
+ },
+ "icons/slab": {
+  "name": "석판",
+  "src": "icon_sheet_2.png",
+  "size": [
+   200,
+   152
+  ]
+ },
+ "icons/brick": {
+  "name": "벽돌",
+  "src": "icon_sheet_2.png",
+  "size": [
+   185,
+   160
+  ]
+ },
+ "icons/whetstone": {
+  "name": "연마석",
+  "src": "icon_sheet_2.png",
+  "size": [
+   182,
+   165
+  ]
+ },
+ "icons/carved_stone": {
+  "name": "조각석",
+  "src": "icon_sheet_2.png",
+  "size": [
+   182,
+   188
+  ]
+ },
+ "icons/glass": {
+  "name": "유리",
+  "src": "icon_sheet_2.png",
+  "size": [
+   199,
+   176
+  ]
+ },
+ "icons/thick_glass": {
+  "name": "두꺼운 유리",
+  "src": "icon_sheet_2.png",
+  "size": [
+   172,
+   164
+  ]
+ },
+ "icons/glass_bottle": {
+  "name": "유리병",
+  "src": "icon_sheet_2.png",
+  "size": [
+   140,
+   177
+  ]
+ },
+ "icons/glass_lens": {
+  "name": "유리 렌즈",
+  "src": "icon_sheet_2.png",
+  "size": [
+   171,
+   151
+  ]
+ },
+ "icons/ceramic_shard": {
+  "name": "도자기 조각",
+  "src": "icon_sheet_2.png",
+  "size": [
+   176,
+   162
+  ]
+ },
+ "icons/ceramic_bowl": {
+  "name": "도자기 그릇",
+  "src": "icon_sheet_2.png",
+  "size": [
+   188,
+   151
+  ]
+ },
+ "icons/copper_ingot": {
+  "name": "구리 주괴",
+  "src": "icon_sheet_2.png",
+  "size": [
+   201,
+   163
+  ]
+ },
+ "icons/tin_ingot": {
+  "name": "주석 주괴",
+  "src": "icon_sheet_2.png",
+  "size": [
+   204,
+   169
+  ]
+ },
+ "icons/brass_ingot": {
+  "name": "놋쇠 주괴",
+  "src": "icon_sheet_2.png",
+  "size": [
+   203,
+   163
+  ]
+ },
+ "icons/iron_ingot": {
+  "name": "철 주괴",
+  "src": "icon_sheet_2.png",
+  "size": [
+   205,
+   166
+  ]
+ },
+ "icons/steel_ingot": {
+  "name": "강철 주괴",
+  "src": "icon_sheet_3.png",
+  "size": [
+   181,
+   147
+  ]
+ },
+ "icons/silver_ingot": {
+  "name": "은 주괴",
+  "src": "icon_sheet_3.png",
+  "size": [
+   183,
+   149
+  ]
+ },
+ "icons/gold_ingot": {
+  "name": "금 주괴",
+  "src": "icon_sheet_3.png",
+  "size": [
+   182,
+   152
+  ]
+ },
+ "icons/mana_metal": {
+  "name": "정제 마력 금속",
+  "src": "icon_sheet_3.png",
+  "size": [
+   189,
+   156
+  ]
+ },
+ "icons/cloth": {
+  "name": "천 조각",
+  "src": "icon_sheet_3.png",
+  "size": [
+   186,
+   140
+  ]
+ },
+ "icons/sturdy_cloth": {
+  "name": "튼튼한 천",
+  "src": "icon_sheet_3.png",
+  "size": [
+   193,
+   162
+  ]
+ },
+ "icons/leather_strap": {
+  "name": "가죽끈",
+  "src": "icon_sheet_3.png",
+  "size": [
+   172,
+   138
+  ]
+ },
+ "icons/leather_plate": {
+  "name": "가죽판",
+  "src": "icon_sheet_3.png",
+  "size": [
+   184,
+   166
+  ]
+ },
+ "icons/medicinal_extract": {
+  "name": "약용 추출물",
+  "src": "icon_sheet_3.png",
+  "size": [
+   163,
+   181
+  ]
+ },
+ "icons/concentrated_extract": {
+  "name": "농축 약용 추출물",
+  "src": "icon_sheet_3.png",
+  "size": [
+   121,
+   189
+  ]
+ },
+ "icons/mushroom_powder": {
+  "name": "버섯 가루",
+  "src": "icon_sheet_3.png",
+  "size": [
+   190,
+   153
+  ]
+ },
+ "icons/resin_adhesive": {
+  "name": "수지 접착제",
+  "src": "icon_sheet_3.png",
+  "size": [
+   171,
+   173
+  ]
+ },
+ "icons/poison_extract": {
+  "name": "독 추출물",
+  "src": "icon_sheet_3.png",
+  "size": [
+   113,
+   189
+  ]
+ },
+ "icons/mana_powder": {
+  "name": "마력 가루",
+  "src": "icon_sheet_3.png",
+  "size": [
+   169,
+   171
+  ]
+ },
+ "icons/nails": {
+  "name": "못",
+  "src": "icon_sheet_3.png",
+  "size": [
+   153,
+   175
+  ]
+ },
+ "icons/iron_nails": {
+  "name": "철 못",
+  "src": "icon_sheet_3.png",
+  "size": [
+   179,
+   162
+  ]
+ },
+ "icons/metal_plate": {
+  "name": "금속 판",
+  "src": "icon_sheet_3.png",
+  "size": [
+   192,
+   154
+  ]
+ },
+ "icons/steel_plate": {
+  "name": "강철 판",
+  "src": "icon_sheet_3.png",
+  "size": [
+   196,
+   159
+  ]
+ },
+ "icons/metal_rod": {
+  "name": "금속 봉",
+  "src": "icon_sheet_3.png",
+  "size": [
+   184,
+   162
+  ]
+ },
+ "icons/steel_rod": {
+  "name": "강철 봉",
+  "src": "icon_sheet_3.png",
+  "size": [
+   182,
+   165
+  ]
+ },
+ "icons/hinge": {
+  "name": "경첩",
+  "src": "icon_sheet_3.png",
+  "size": [
+   183,
+   155
+  ]
+ },
+ "icons/bracket": {
+  "name": "브래킷",
+  "src": "icon_sheet_3.png",
+  "size": [
+   152,
+   172
+  ]
+ },
+ "icons/chain": {
+  "name": "체인",
+  "src": "icon_sheet_3.png",
+  "size": [
+   171,
+   168
+  ]
+ },
+ "icons/hook": {
+  "name": "갈고리",
+  "src": "icon_sheet_3.png",
+  "size": [
+   140,
+   184
+  ]
+ },
+ "icons/small_gear": {
+  "name": "작은 톱니",
+  "src": "icon_sheet_3.png",
+  "size": [
+   128,
+   132
+  ]
+ },
+ "icons/large_gear": {
+  "name": "큰 톱니",
+  "src": "icon_sheet_3.png",
+  "size": [
+   190,
+   184
+  ]
+ },
+ "icons/spring": {
+  "name": "스프링",
+  "src": "icon_sheet_3.png",
+  "size": [
+   167,
+   170
+  ]
+ },
+ "icons/shaft": {
+  "name": "회전축",
+  "src": "icon_sheet_3.png",
+  "size": [
+   210,
+   151
+  ]
+ },
+ "icons/bearing": {
+  "name": "베어링",
+  "src": "icon_sheet_3.png",
+  "size": [
+   169,
+   171
+  ]
+ },
+ "icons/pulley": {
+  "name": "도르래",
+  "src": "icon_sheet_3.png",
+  "size": [
+   154,
+   188
+  ]
+ },
+ "icons/wire": {
+  "name": "와이어",
+  "src": "icon_sheet_3.png",
+  "size": [
+   177,
+   165
+  ]
+ },
+ "icons/pressure_pipe": {
+  "name": "압력관",
+  "src": "icon_sheet_3.png",
+  "size": [
+   189,
+   161
+  ]
+ },
+ "icons/valve_part": {
+  "name": "밸브 부품",
+  "src": "icon_sheet_3.png",
+  "size": [
+   186,
+   163
+  ]
+ },
+ "icons/machine_frame": {
+  "name": "기계 프레임",
+  "src": "icon_sheet_3.png",
+  "size": [
+   197,
+   180
+  ]
+ },
+ "icons/rope": {
+  "name": "로프",
+  "src": "icon_sheet_3.png",
+  "size": [
+   187,
+   166
+  ]
+ },
+ "icons/rope_ladder": {
+  "name": "밧줄 사다리",
+  "src": "icon_sheet_3.png",
+  "size": [
+   156,
+   190
+  ]
+ },
+ "icons/handle_part": {
+  "name": "손잡이 부품",
+  "src": "icon_sheet_3.png",
+  "size": [
+   198,
+   172
+  ]
+ },
+ "icons/buckle": {
+  "name": "버클",
+  "src": "icon_sheet_3.png",
+  "size": [
+   178,
+   162
+  ]
+ },
+ "icons/lamp_wick": {
+  "name": "램프 심지",
+  "src": "icon_sheet_3.png",
+  "size": [
+   196,
+   180
+  ]
+ },
+ "icons/lamp_frame": {
+  "name": "램프 틀",
+  "src": "icon_sheet_3.png",
+  "size": [
+   131,
+   198
+  ]
+ },
+ "icons/bottle_cap": {
+  "name": "병마개",
+  "src": "icon_sheet_4.png",
+  "size": [
+   152,
+   116
+  ]
+ },
+ "icons/packing_crate": {
+  "name": "포장 상자",
+  "src": "icon_sheet_4.png",
+  "size": [
+   193,
+   192
+  ]
+ },
+ "icons/reinforced_strap": {
+  "name": "보강 가죽 스트랩",
+  "src": "icon_sheet_4.png",
+  "size": [
+   183,
+   188
+  ]
+ },
+ "icons/tool_pouch": {
+  "name": "도구집",
+  "src": "icon_sheet_4.png",
+  "size": [
+   181,
+   186
+  ]
+ },
+ "icons/mana_core": {
+  "name": "마력 코어",
+  "src": "icon_sheet_4.png",
+  "size": [
+   194,
+   191
+  ]
+ },
+ "icons/spirit_crystal": {
+  "name": "정령 결정",
+  "src": "icon_sheet_4.png",
+  "size": [
+   159,
+   192
+  ]
+ },
+ "icons/rune_plate": {
+  "name": "룬 판",
+  "src": "icon_sheet_4.png",
+  "size": [
+   187,
+   186
+  ]
+ },
+ "icons/rune_lens": {
+  "name": "룬 렌즈",
+  "src": "icon_sheet_4.png",
+  "size": [
+   173,
+   175
+  ]
+ },
+ "icons/sealing_ring": {
+  "name": "봉인 고리",
+  "src": "icon_sheet_4.png",
+  "size": [
+   177,
+   151
+  ]
+ },
+ "icons/mana_conductor": {
+  "name": "마력 도선",
+  "src": "icon_sheet_4.png",
+  "size": [
+   172,
+   176
+  ]
+ },
+ "icons/ancient_core": {
+  "name": "고대 기계 코어",
+  "src": "icon_sheet_4.png",
+  "size": [
+   183,
+   191
+  ]
+ },
+ "icons/restored_relic": {
+  "name": "복원된 유물 부품",
+  "src": "icon_sheet_4.png",
+  "size": [
+   186,
+   205
+  ]
+ },
+ "nodes/herb_bush": {
+  "name": "약초 덤불",
+  "src": "node_herb_v2.png",
+  "size": [
+   449,
+   445
+  ]
+ },
+ "nodes/red_herb_bush": {
+  "name": "붉은 약초 덤불",
+  "src": "node_herb_v2.png",
+  "size": [
+   456,
+   451
+  ]
+ },
+ "nodes/blue_herb_bush": {
+  "name": "푸른 약초 덤불",
+  "src": "node_herb_v2.png",
+  "size": [
+   450,
+   435
+  ]
+ },
+ "nodes/fiber_grass": {
+  "name": "식물 섬유풀",
+  "src": "node_herb_v2.png",
+  "size": [
+   481,
+   460
+  ]
+ },
+ "nodes/mushroom_colony": {
+  "name": "버섯 군락",
+  "src": "node_herb_v2.png",
+  "size": [
+   454,
+   403
+  ]
+ },
+ "nodes/poison_mushroom_colony": {
+  "name": "독버섯 군락",
+  "src": "node_herb_v2.png",
+  "size": [
+   454,
+   429
+  ]
+ },
+ "nodes_alt/herb_bush_v1": {
+  "name": "약초 덤불(1번째)",
+  "src": "node_herb_v1.png",
+  "size": [
+   419,
+   407
+  ]
+ },
+ "nodes_alt/red_herb_bush_v1": {
+  "name": "붉은 약초 덤불(1번째)",
+  "src": "node_herb_v1.png",
+  "size": [
+   414,
+   405
+  ]
+ },
+ "nodes_alt/blue_herb_bush_v1": {
+  "name": "푸른 약초 덤불(1번째)",
+  "src": "node_herb_v1.png",
+  "size": [
+   419,
+   415
+  ]
+ },
+ "nodes_alt/fiber_grass_v1": {
+  "name": "식물 섬유풀(1번째)",
+  "src": "node_herb_v1.png",
+  "size": [
+   451,
+   409
+  ]
+ },
+ "nodes_alt/mushroom_colony_v1": {
+  "name": "버섯 군락(1번째)",
+  "src": "node_herb_v1.png",
+  "size": [
+   420,
+   375
+  ]
+ },
+ "nodes_alt/poison_mushroom_colony_v1": {
+  "name": "독버섯 군락(1번째)",
+  "src": "node_herb_v1.png",
+  "size": [
+   451,
+   407
+  ]
+ },
+ "nodes/sap_tree": {
+  "name": "수액나무",
+  "src": "node_sheet_ore1.png",
+  "size": [
+   463,
+   505
+  ]
+ },
+ "nodes/small_stone_pile": {
+  "name": "작은 돌무더기",
+  "src": "node_sheet_ore1.png",
+  "size": [
+   416,
+   251
+  ]
+ },
+ "nodes/big_rock": {
+  "name": "큰 바위",
+  "src": "node_sheet_ore1.png",
+  "size": [
+   472,
+   398
+  ]
+ },
+ "nodes/copper_vein": {
+  "name": "구리 광맥",
+  "src": "node_sheet_ore1.png",
+  "size": [
+   457,
+   407
+  ]
+ },
+ "nodes/tin_vein": {
+  "name": "주석 광맥",
+  "src": "node_sheet_ore1.png",
+  "size": [
+   452,
+   413
+  ]
+ },
+ "nodes/zinc_vein": {
+  "name": "아연 광맥",
+  "src": "node_sheet_ore1.png",
+  "size": [
+   458,
+   402
+  ]
+ },
+ "nodes/iron_vein": {
+  "name": "철 광맥",
+  "src": "node_sheet_ore2.png",
+  "size": [
+   476,
+   440
+  ]
+ },
+ "nodes/silver_vein": {
+  "name": "은 광맥",
+  "src": "node_sheet_ore2.png",
+  "size": [
+   459,
+   431
+  ]
+ },
+ "nodes/gold_vein": {
+  "name": "금 광맥",
+  "src": "node_sheet_ore2.png",
+  "size": [
+   472,
+   447
+  ]
+ },
+ "nodes/crystal_vein": {
+  "name": "수정 광맥",
+  "src": "node_sheet_ore2.png",
+  "size": [
+   458,
+   426
+  ]
+ },
+ "nodes/mana_vein": {
+  "name": "마력 광맥",
+  "src": "node_sheet_ore2.png",
+  "size": [
+   455,
+   441
+  ]
+ },
+ "nodes/coal_pile": {
+  "name": "석탄 더미",
+  "src": "node_sheet_ore2.png",
+  "size": [
+   467,
+   430
+  ]
+ },
+ "nodes/abandoned_box": {
+  "name": "버려진 상자",
+  "src": "node_sheet_scrap.png",
+  "size": [
+   497,
+   439
+  ]
+ },
+ "nodes/broken_minecart": {
+  "name": "고장난 광차",
+  "src": "node_sheet_scrap.png",
+  "size": [
+   466,
+   422
+  ]
+ },
+ "nodes/ancient_debris": {
+  "name": "고대 잔해더미",
+  "src": "node_sheet_scrap.png",
+  "size": [
+   498,
+   488
+  ]
+ },
+ "nodes/glass_shard_pile": {
+  "name": "유리 파편 더미",
+  "src": "node_sheet_scrap.png",
+  "size": [
+   486,
+   417
+  ]
+ },
+ "nodes/collapsed_stone": {
+  "name": "무너진 석재 더미",
+  "src": "node_sheet_scrap.png",
+  "size": [
+   577,
+   440
+  ]
+ },
+ "nodes/wildflower_patch": {
+  "name": "야생 꽃밭",
+  "src": "node_sheet_flower.png",
+  "size": [
+   458,
+   389
+  ]
+ },
+ "nodes/aromatic_patch": {
+  "name": "향초 군락",
+  "src": "node_sheet_flower.png",
+  "size": [
+   466,
+   423
+  ]
+ },
+ "nodes/water_lily_node": {
+  "name": "수련잎",
+  "src": "node_sheet_flower.png",
+  "size": [
+   454,
+   381
+  ]
+ },
+ "nodes/swamp_moss_node": {
+  "name": "늪 이끼",
+  "src": "node_sheet_flower.png",
+  "size": [
+   476,
+   406
+  ]
+ },
+ "nodes/scrap_pile": {
+  "name": "폐철 더미",
+  "src": "node_sheet_flower.png",
+  "size": [
+   483,
+   373
+  ]
+ },
+ "nodes/broken_cart": {
+  "name": "깨진 수레",
+  "src": "node_sheet_flower.png",
+  "size": [
+   470,
+   420
+  ]
+ },
+ "tools/axe_stone": {
+  "name": "돌 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   240,
+   295
+  ]
+ },
+ "tools/pick_stone": {
+  "name": "돌 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   258,
+   286
+  ]
+ },
+ "tools/axe_copper": {
+  "name": "구리 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   226,
+   301
+  ]
+ },
+ "tools/pick_copper": {
+  "name": "구리 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   261,
+   297
+  ]
+ },
+ "tools/axe_bronze": {
+  "name": "청동 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   237,
+   309
+  ]
+ },
+ "tools/pick_bronze": {
+  "name": "청동 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   264,
+   305
+  ]
+ },
+ "tools/axe_iron": {
+  "name": "철 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   236,
+   319
+  ]
+ },
+ "tools/pick_iron": {
+  "name": "철 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   263,
+   305
+  ]
+ },
+ "tools/axe_steel": {
+  "name": "강철 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   235,
+   312
+  ]
+ },
+ "tools/pick_steel": {
+  "name": "강철 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   270,
+   288
+  ]
+ },
+ "tools/axe_mana": {
+  "name": "마력 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   246,
+   315
+  ]
+ },
+ "tools/pick_mana": {
+  "name": "마력 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   279,
+   303
+  ]
+ },
+ "tools/axe_mithril": {
+  "name": "미스릴 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   236,
+   316
+  ]
+ },
+ "tools/pick_mithril": {
+  "name": "미스릴 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   279,
+   317
+  ]
+ },
+ "tools/axe_magic": {
+  "name": "마법 도끼",
+  "src": "tools_axe_pick.png",
+  "size": [
+   263,
+   325
+  ]
+ },
+ "tools/pick_magic": {
+  "name": "마법 곡괭이",
+  "src": "tools_axe_pick.png",
+  "size": [
+   277,
+   330
+  ]
+ }
+}
