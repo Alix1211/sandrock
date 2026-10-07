@@ -188,8 +188,21 @@ def atlas_cell(atlas, idx):
     box = cut.getbbox()
     return cut.crop(box) if box else cut
 
+def load_b64_atlas(parts):
+    # GitHub connector의 binary 업로드 제한을 피하면서 사용자 원본 bytes를 보존한다.
+    raw = ''.join(open(os.path.join(ROOT, p), encoding='ascii').read().strip() for p in parts)
+    return Image.open(io.BytesIO(base64.b64decode(raw))).convert('RGBA')
+
 # 케인이 이 대화에 올린 최종 23종 건물. 원본 업로드 순서를 실제 역할에 맞춰 연결.
-_TOWN_BUILD_ATLAS = Image.open(R + 'sandrock/town_buildings.webp').convert('RGBA')
+_TOWN_BUILD_ATLAS = load_b64_atlas([
+    'assets/sandrock_b64/buildings_part_a_00.txt','assets/sandrock_b64/buildings_part_a_01.txt',
+    'assets/sandrock_b64/buildings_part_a_02.txt','assets/sandrock_b64/buildings_part_a_03.txt',
+    'assets/sandrock_b64/buildings_part_a_04.txt','assets/sandrock_b64/buildings_part_b_00.txt',
+    'assets/sandrock_b64/buildings_part_b_01.txt','assets/sandrock_b64/buildings_part_b_02.txt',
+    'assets/sandrock_b64/buildings_part_b_03.txt','assets/sandrock_b64/buildings_part_b_04.txt',
+    'assets/sandrock_b64/buildings_part_c_00.txt','assets/sandrock_b64/buildings_part_c_01.txt',
+    'assets/sandrock_b64/buildings_part_c_02.txt','assets/sandrock_b64/buildings_part_c_03.txt',
+])
 _BUILDING_CELL = {
     'general_store':3, 'workshop':2, 'carpentry':1, 'research_center':7, 'city_hall':6,
     'recycling':5, 'material_shop':4, 'blacksmith':8, 'clothing':10, 'mine_office':9,
@@ -366,7 +379,12 @@ bpos = {b['k']: b for b in blds}
 PORT = {}
 npcs = []
 # 케인이 올린 24명 NPC 시트. 역할에 맞게 재배열한 atlas의 cell 번호.
-_TOWN_NPC_ATLAS = Image.open(R + 'sandrock/town_npcs.webp').convert('RGBA')
+_TOWN_NPC_ATLAS = load_b64_atlas([
+    'assets/sandrock_b64/npcs_part_a_00.txt','assets/sandrock_b64/npcs_part_a_01.txt',
+    'assets/sandrock_b64/npcs_part_a_02.txt','assets/sandrock_b64/npcs_part_a_03.txt',
+    'assets/sandrock_b64/npcs_part_a_04.txt','assets/sandrock_b64/npcs_part_b_00.txt',
+    'assets/sandrock_b64/npcs_part_b_01.txt',
+])
 _NPC_CELL = [21,1,3,15,5,6,7,2,9,10,11,12,14,22,8,16,17,18,4,20,13,19,23,24]
 for no, name, title, where, side, line, shop in NPC:
     im = atlas_cell(_TOWN_NPC_ATLAS, _NPC_CELL[no - 1])
