@@ -528,8 +528,8 @@ for f in sorted(_g.glob(R + 'ui/hud_icons/*.png')):
     n = os.path.basename(f)[:-4]
     if not n[:2].isdigit() or int(n[:2]) > 27: continue
     im = Image.open(f).convert('RGBA'); im.thumbnail((112, 112), Image.LANCZOS); SKI[n.split('_', 1)[1]] = enc(im, 88)
-if os.path.exists(_player_sheet_path):
-    ef = Image.open(_player_sheet_path).convert('RGBA').crop((0, 0, 170, 172))
+if _ps is not None:
+    ef = _ps.crop((0, 0, 170, 172))
 else:
     ef = Image.open(R + 'characters/elf/front_0.png').convert('RGBA')
 ef = ef.crop(ef.getbbox())
